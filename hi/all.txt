@@ -1,0 +1,10 @@
+Namespace(evaluate=False, base_dir='/home/pradyumngoya/working_dr', data_root='snippets/data/partnet_mobility_root/fine_tune_sorted_4', use_detach=True, checkpoint_folder='checkpoints/', resume_file='model_best.pth.tar', enable_flash=False, resume_train=False, base_output='./train_output', checkpoint='checkpoint', runs='runs', logs='logs.txt', batch_size=14, max_seq_len=8, max_motion_vectors=1, num_workers=4, loop=1, category='all', epochs=500, lr=0.001, min_lr=5e-05, resume_epoch=0, warmup_epochs=0, weight_decay=0.01, train_split_ratio=0.8, device='cuda:0')
+./train_output/2024-05-24_15_56/checkpoint all
+self.data_path='/home/pradyumngoya/working_dr/snippets/data/partnet_mobility_root/fine_tune_sorted_4'
+self.data_path='/home/pradyumngoya/working_dr/snippets/data/partnet_mobility_root/fine_tune_sorted_4'
+len(train_dataset)=28026
+len(test_dataset)=7378
+starting training
+Epoch 1. train_loss: 58.57017068. val_loss: 61.12545774. accuracy 0.0. orientation_error 59.59420361182613. point_error 0.4777080815384221. Best Epoch: 1. Best val loss: 61.12545774.                     Current lr : 0.00100000.
+Epoch 2. train_loss: 53.62083230. accuracy 0.0. orientation_error 56.18029480647154. point_error 0.41834675074621214. Current lr : 0.00099999.
+Epoch 3. train_loss: 48.54339508. accuracy 0.0. orientation_error 56.834063534200396. point_error 0.4281287404402. Current lr : 0.00099996.

@@ -1,0 +1,334 @@
+motion_type_bins=[17, 0, 19, 151] orientation_bins=[12, 10, 14]
+its training
+Namespace(evaluate=False, base_dir='/home/pradyumngoya/working_dr', data_root='snippets/data/partnet_mobility_root/fine_transformer_mobilities', pretraining=False, resume_train=False, test_ckpt_dir=None, base_output='./train_output', checkpoint='checkpoint', runs='runs', logs='logs.txt', model='transformer', loss_red='mean', features_reduce='mean', not_enable_flash=False, obb_red='mean', num_layers=1, use_type_weights=False, use_orientation_weights=False, best_model='model_best.pth.tar', batch_size=1, max_seq_len=13, num_workers=1, loop=1, max_shapes=1000000000, category='Display', epochs=1000, lr=0.0005, min_lr=5e-05, resume_epoch=0, warmup_epochs=0, weight_decay=0.01, device='cuda:0', test=False)
+checkpoint='./train_output/2024-07-18_00_45/checkpoint' args.category='Display' args.batch_size=1
+self.data_path='/home/pradyumngoya/working_dr/snippets/data/partnet_mobility_root/fine_transformer_mobilities'
+self.data_path='/home/pradyumngoya/working_dr/snippets/data/partnet_mobility_root/fine_transformer_mobilities'
+self.data_path='/home/pradyumngoya/working_dr/snippets/data/partnet_mobility_root/fine_transformer_mobilities'
+len(train_dataset)=25
+len(test_dataset)=4
+len(val_dataset)=3
+dataloaders are working well
+starting training
+  0%|          | 0/25 [00:00<?, ?it/s]start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+True
+g_truth_axis=array([[0., 0., 0.],
+       [0., 1., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[ 0.      ,  0.      ,  0.      ],
+       [-0.016737,  0.      ,  0.002806],
+       [ 0.      ,  0.      ,  0.      ]])
+residual=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+its here
+  0%|          | 0/25 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "/home/pradyumngoya/working_dr/Partnet/Unsupervised/attention_model/train.py", line 444, in <module>
+start
+False
+    main(args)
+  File "/home/pradyumngoya/working_dr/Partnet/Unsupervised/attention_model/train.py", line 410, in main
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+    losses, errors= train(additional_arguments,train_loader, model,multitaskloss_instance, optimizer,motion_lfn,orientation_lfn,residual_lfn,point_lfn,)
+  File "/home/pradyumngoya/working_dr/Partnet/Unsupervised/attention_model/train.py", line 129, in train
+    raise KeyboardInterrupt
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+KeyboardInterrupt
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+True
+g_truth_axis=array([[1., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[ 0.35202998,  0.19371   , -0.03038525],
+       [ 0.        ,  0.        ,  0.        ],
+       [ 0.        ,  0.        ,  0.        ]])
+residual=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+True
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 1.]])
+rotation_point=array([[ 0.        ,  0.        ,  0.        ],
+       [ 0.        ,  0.        ,  0.        ],
+       [-0.6814936 ,  0.27020487,  0.095528  ]])
+residual=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+end
+start
+True
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 1.]])
+rotation_point=array([[ 0.        ,  0.        ,  0.        ],
+       [ 0.        ,  0.        ,  0.        ],
+       [-0.6814936 ,  0.27020487,  0.095528  ]])
+residual=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+False
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+rotation_point=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+residual=array([[-1.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+end
+start
+True
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 1.]])
+rotation_point=array([[ 0.        ,  0.        ,  0.        ],
+       [ 0.        ,  0.        ,  0.        ],
+       [-0.70068755,  0.26627282,  0.095528  ]])
+residual=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+end
+start
+True
+g_truth_axis=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 1.]])
+rotation_point=array([[ 0.        ,  0.        ,  0.        ],
+       [ 0.        ,  0.        ,  0.        ],
+       [-0.6814936 ,  0.27020487,  0.095528  ]])
+residual=array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+end

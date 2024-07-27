@@ -1,0 +1,177 @@
+Namespace(evaluate=False, base_dir='/home/pradyumngoya/working_dr', data_root='snippets/data/partnet_mobility_root/fine_tune_sorted_4', use_detach=True, checkpoint_folder='checkpoints/', resume_file='model_best.pth.tar', enable_flash=False, resume_train=False, base_output='./train_output', checkpoint='checkpoint', runs='runs', logs='logs.txt', batch_size=14, max_seq_len=8, max_motion_vectors=1, num_workers=0, loop=1, category='Table', epochs=500, lr=0.0005, min_lr=5e-05, resume_epoch=0, warmup_epochs=0, weight_decay=0.01, train_split_ratio=0.8, device='cuda:0')
+self.data_path='/home/pradyumngoya/working_dr/snippets/data/partnet_mobility_root/fine_tune_sorted_4'
+self.data_path='/home/pradyumngoya/working_dr/snippets/data/partnet_mobility_root/fine_tune_sorted_4'
+len(train_dataset)=3207
+len(test_dataset)=848
+starting training
+Epoch 1. train_loss: 9.52529332. val_loss: 6.78243734. accuracy 0.9124424284504306. orientation_error 65.52158514095407. point_error 0.2997691362134872. Best Epoch: 1. Best val loss: 6.78243734.                     Current lr : 0.00050000.
+Epoch 2. train_loss: 9.74410985. accuracy 0.17329193373089252. orientation_error 37.613322662917625. point_error 0.27350378583954726. Current lr : 0.00050000.
+Epoch 3. train_loss: 10.30353738. accuracy 0.12111801854942156. orientation_error 41.087581883951245. point_error 0.2649293466106705. Current lr : 0.00049998.
+Epoch 4. train_loss: 9.11690981. accuracy 0.07360248821585075. orientation_error 36.54446085127711. point_error 0.2739915384384601. Current lr : 0.00049996.
+Epoch 5. train_loss: 9.48514877. accuracy 0.057142860053674034. orientation_error 41.54939328517732. point_error 0.2585495244873607. Current lr : 0.00049993.
+Epoch 6. train_loss: 10.20733974. val_loss: 6.13526248. accuracy 0.0. orientation_error 57.873586204919484. point_error 0.332167177431045. Best Epoch: 6. Best val loss: 6.13526248.                     Current lr : 0.00049989.
+Epoch 7. train_loss: 7.86195188. accuracy 0.020807454508283862. orientation_error 39.891240288133716. point_error 0.23926870709528095. Current lr : 0.00049984.
+Epoch 8. train_loss: 10.43305597. accuracy 0.012422360803769983. orientation_error 39.4431804757167. point_error 0.2467215711655824. Current lr : 0.00049978.
+Epoch 9. train_loss: 9.49043195. accuracy 0.010559006715598314. orientation_error 34.4920695204037. point_error 0.23701272580934607. Current lr : 0.00049972.
+Epoch 10. train_loss: 7.86808000. accuracy 0.027639752885569698. orientation_error 38.583321324701664. point_error 0.24643132770838944. Current lr : 0.00049964.
+Epoch 11. train_loss: 8.55575603. val_loss: 6.81364066. accuracy 0.0. orientation_error 23.24813581942287. point_error 0.43390538423292097. Best Epoch: 6. Best val loss: 6.13526248.                     Current lr : 0.00049956.
+Epoch 12. train_loss: 8.10738725. accuracy 0.0009316770602827486. orientation_error 39.07712396860978. point_error 0.23787852010649183. Current lr : 0.00049946.
+Epoch 13. train_loss: 8.74465396. accuracy 0.002173913140659747. orientation_error 35.21742831756377. point_error 0.22892851725868557. Current lr : 0.00049936.
+Epoch 14. train_loss: 9.11560747. accuracy 0.008695652562638987. orientation_error 37.288467804825444. point_error 0.2373978019165604. Current lr : 0.00049925.
+Epoch 15. train_loss: 8.01429040. accuracy 0.0003105590200942496. orientation_error 37.52199016774813. point_error 0.2344211139270793. Current lr : 0.00049913.
+Epoch 16. train_loss: 8.99711482. val_loss: 6.26115689. accuracy 0.0. orientation_error 56.72595135015374. point_error 0.3915334574637874. Best Epoch: 6. Best val loss: 6.13526248.                     Current lr : 0.00049900.
+Epoch 17. train_loss: 8.53568401. accuracy 0.0003105590200942496. orientation_error 37.47661530398663. point_error 0.24674699267615444. Current lr : 0.00049886.
+Epoch 18. train_loss: 9.93422719. accuracy 0.001552795100471248. orientation_error 36.49284067673068. point_error 0.24655154130381088. Current lr : 0.00049872.
+Epoch 19. train_loss: 8.40539229. accuracy 0.0. orientation_error 39.69835100554189. point_error 0.23367834745541863. Current lr : 0.00049856.
+Epoch 20. train_loss: 8.17295468. accuracy 0.0003105590200942496. orientation_error 37.373566547060044. point_error 0.24920929929484492. Current lr : 0.00049840.
+Epoch 21. train_loss: 8.55730066. val_loss: 6.47243692. accuracy 0.0. orientation_error 16.278915749708165. point_error 0.32812015087373797. Best Epoch: 6. Best val loss: 6.13526248.                     Current lr : 0.00049823.
+Epoch 22. train_loss: 7.75866016. accuracy 0.0003105590200942496. orientation_error 33.51708589117362. point_error 0.22248397249242532. Current lr : 0.00049804.
+Epoch 23. train_loss: 8.64712819. accuracy 0.0. orientation_error 37.43037746448415. point_error 0.23164370824461397. Current lr : 0.00049785.
+Epoch 24. train_loss: 7.59109726. accuracy 0.0. orientation_error 37.08335220220677. point_error 0.2424127082137958. Current lr : 0.00049765.
+Epoch 25. train_loss: 8.55393696. accuracy 0.0003105590200942496. orientation_error 38.578806827799006. point_error 0.23031926849937956. Current lr : 0.00049745.
+Epoch 26. train_loss: 7.67209519. val_loss: 5.81120310. accuracy 0.0. orientation_error 10.2355685643736. point_error 0.3245347252776546. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00049723.
+Epoch 27. train_loss: 14.29483827. accuracy 0.018944100387718366. orientation_error 39.072184865369856. point_error 0.24969005681898282. Current lr : 0.00049700.
+Epoch 28. train_loss: 10.08665828. accuracy 0.004658385301413743. orientation_error 39.90481315187126. point_error 0.23978214014483534. Current lr : 0.00049677.
+Epoch 29. train_loss: 7.93190177. accuracy 0.005900621381790741. orientation_error 39.21119269286777. point_error 0.25149518619089023. Current lr : 0.00049653.
+Epoch 30. train_loss: 7.65836007. accuracy 0.02826087102293968. orientation_error 41.00660980089978. point_error 0.23384889775644177. Current lr : 0.00049628.
+Epoch 31. train_loss: 8.48105109. val_loss: 19.17857029. accuracy 0.0. orientation_error 51.10502807962019. point_error 0.3829995595639752. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00049601.
+Epoch 32. train_loss: 9.02867315. accuracy 0.0. orientation_error 41.77489007374674. point_error 0.2212654113445593. Current lr : 0.00049575.
+Epoch 33. train_loss: 7.83109619. accuracy 0.0. orientation_error 37.00617653148136. point_error 0.23341005042843196. Current lr : 0.00049547.
+Epoch 34. train_loss: 7.94549191. accuracy 0.0003105590200942496. orientation_error 37.41962785806609. point_error 0.24630225529165373. Current lr : 0.00049518.
+Epoch 35. train_loss: 7.61695692. accuracy 0.0. orientation_error 35.687506209453. point_error 0.23621524930324245. Current lr : 0.00049489.
+Epoch 36. train_loss: 8.41724820. val_loss: 18.25548800. accuracy 0.0. orientation_error 60.91960801489216. point_error 0.36538188015261003. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00049458.
+Epoch 37. train_loss: 7.57295430. accuracy 0.0. orientation_error 33.87330671319684. point_error 0.23853569814692374. Current lr : 0.00049427.
+Epoch 38. train_loss: 8.23788139. accuracy 0.0. orientation_error 42.98755817296737. point_error 0.236260233009639. Current lr : 0.00049395.
+Epoch 39. train_loss: 9.01629232. accuracy 0.0. orientation_error 45.06133524742693. point_error 0.24202526879051459. Current lr : 0.00049362.
+Epoch 40. train_loss: 7.98882180. accuracy 0.0. orientation_error 40.2448927168969. point_error 0.2403837366272574. Current lr : 0.00049328.
+Epoch 41. train_loss: 8.64395432. val_loss: 19.50387383. accuracy 0.0. orientation_error 44.12641721114181. point_error 0.3908924066251324. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00049293.
+Epoch 42. train_loss: 8.64631865. accuracy 0.0. orientation_error 36.417790598632024. point_error 0.2285209602959778. Current lr : 0.00049258.
+Epoch 43. train_loss: 8.70464018. accuracy 0.0. orientation_error 42.268857821499196. point_error 0.23205715605746144. Current lr : 0.00049221.
+Epoch 44. train_loss: 8.55468463. accuracy 0.0. orientation_error 36.632888976929536. point_error 0.24989856967459553. Current lr : 0.00049184.
+Epoch 45. train_loss: 7.58020190. accuracy 0.0. orientation_error 37.543967340286784. point_error 0.23080946634645047. Current lr : 0.00049146.
+Epoch 46. train_loss: 7.87731080. val_loss: 22.59161257. accuracy 0.0. orientation_error 48.67176864452728. point_error 0.3920626707615391. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00049107.
+Epoch 47. train_loss: 8.50264643. accuracy 0.0. orientation_error 37.82867915260879. point_error 0.23540106474057487. Current lr : 0.00049067.
+Epoch 48. train_loss: 7.74305364. accuracy 0.0. orientation_error 34.35580756175044. point_error 0.2375061609822771. Current lr : 0.00049026.
+Epoch 49. train_loss: 7.69861396. accuracy 0.0. orientation_error 40.52223507730244. point_error 0.2362387335818747. Current lr : 0.00048984.
+Epoch 50. train_loss: 7.56677531. accuracy 0.0. orientation_error 34.618262982030224. point_error 0.22731852711218856. Current lr : 0.00048942.
+Epoch 51. train_loss: 8.68511749. val_loss: 23.79643146. accuracy 0.0. orientation_error 31.069697189414704. point_error 0.36045327398084825. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00048899.
+Epoch 52. train_loss: 7.55673185. accuracy 0.0. orientation_error 35.81882963909341. point_error 0.23019610876622407. Current lr : 0.00048855.
+Epoch 53. train_loss: 9.10520800. accuracy 0.0. orientation_error 33.73438153010082. point_error 0.23530357353713202. Current lr : 0.00048810.
+Epoch 54. train_loss: 7.72950307. accuracy 0.0. orientation_error 29.545171636034173. point_error 0.22774030439069737. Current lr : 0.00048764.
+Epoch 55. train_loss: 7.64278130. accuracy 0.0. orientation_error 36.65687519448213. point_error 0.25192552076085756. Current lr : 0.00048717.
+Epoch 56. train_loss: 8.44506375. val_loss: 22.69161667. accuracy 0.0. orientation_error 29.217419867255987. point_error 0.36498590727006236. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00048670.
+Epoch 57. train_loss: 7.77427212. accuracy 0.0. orientation_error 40.10153583385657. point_error 0.23993822718444077. Current lr : 0.00048622.
+Epoch 58. train_loss: 8.36838397. accuracy 0.0. orientation_error 36.95669445433587. point_error 0.2516859225604845. Current lr : 0.00048572.
+Epoch 59. train_loss: 7.07526612. accuracy 0.0. orientation_error 36.804544534621044. point_error 0.23677668334997218. Current lr : 0.00048522.
+Epoch 60. train_loss: 8.91445891. accuracy 0.0. orientation_error 39.05382744050764. point_error 0.23833665369969348. Current lr : 0.00048472.
+Epoch 61. train_loss: 9.41083862. val_loss: 6.37218526. accuracy 0.0. orientation_error 53.191858775515335. point_error 0.34915181129209455. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00048420.
+Epoch 62. train_loss: 8.64706069. accuracy 0.0. orientation_error 32.723776651615104. point_error 0.2288910904818255. Current lr : 0.00048368.
+Epoch 63. train_loss: 8.22725623. accuracy 0.0. orientation_error 37.41686587879308. point_error 0.22613932059510894. Current lr : 0.00048314.
+Epoch 64. train_loss: 8.45343999. accuracy 0.0. orientation_error 38.01792749058301. point_error 0.24497117299748503. Current lr : 0.00048260.
+Epoch 65. train_loss: 8.22438325. accuracy 0.0. orientation_error 40.21703561554727. point_error 0.25291577125697035. Current lr : 0.00048205.
+Epoch 66. train_loss: 8.50787167. val_loss: 6.06648597. accuracy 0.0. orientation_error 11.224323544264452. point_error 0.31969473438878215. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00048149.
+Epoch 67. train_loss: 7.66349342. accuracy 0.0. orientation_error 35.215474902479485. point_error 0.23735526813113172. Current lr : 0.00048093.
+Epoch 68. train_loss: 7.71989480. accuracy 0.0. orientation_error 36.581497373996825. point_error 0.23243443651691728. Current lr : 0.00048036.
+Epoch 69. train_loss: 8.60545325. accuracy 0.0. orientation_error 40.1162623765899. point_error 0.22093626898915872. Current lr : 0.00047977.
+Epoch 70. train_loss: 8.33223551. accuracy 0.0. orientation_error 33.35990860484777. point_error 0.23647609838972922. Current lr : 0.00047918.
+Epoch 71. train_loss: 8.45919261. val_loss: 6.58730521. accuracy 0.0. orientation_error 16.412534599000363. point_error 0.37338279620293646. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00047859.
+Epoch 72. train_loss: 8.26348102. accuracy 0.0. orientation_error 40.19288114456182. point_error 0.22216671337576016. Current lr : 0.00047798.
+Epoch 73. train_loss: 7.77531200. accuracy 0.0. orientation_error 36.00108111105879. point_error 0.2488314940067737. Current lr : 0.00047737.
+Epoch 74. train_loss: 7.54615737. accuracy 0.0. orientation_error 39.01147968748375. point_error 0.2263210217265979. Current lr : 0.00047674.
+Epoch 75. train_loss: 8.02135371. accuracy 0.0. orientation_error 38.119109340287736. point_error 0.24270603281000386. Current lr : 0.00047611.
+Epoch 76. train_loss: 7.53475596. val_loss: 6.45885127. accuracy 0.0. orientation_error 72.69017023183326. point_error 0.3747670775459659. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00047548.
+Epoch 77. train_loss: 8.45989789. accuracy 0.0. orientation_error 36.18643841629482. point_error 0.252345484867692. Current lr : 0.00047483.
+Epoch 78. train_loss: 7.99716030. accuracy 0.0. orientation_error 34.72411958752653. point_error 0.23095481680787128. Current lr : 0.00047418.
+Epoch 79. train_loss: 7.43306187. accuracy 0.0. orientation_error 24.354636000367545. point_error 0.21591589502666308. Current lr : 0.00047352.
+Epoch 80. train_loss: 8.44905921. accuracy 0.0. orientation_error 34.403534469924224. point_error 0.24148115667959918. Current lr : 0.00047285.
+Epoch 81. train_loss: 8.44215978. val_loss: 6.91164489. accuracy 0.0. orientation_error 63.64833737352837. point_error 0.3999570608139038. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00047217.
+Epoch 82. train_loss: 7.54093163. accuracy 0.0. orientation_error 34.33767240285967. point_error 0.223377401576094. Current lr : 0.00047148.
+Epoch 83. train_loss: 7.59625343. accuracy 0.0. orientation_error 41.78835159632084. point_error 0.22702330600308335. Current lr : 0.00047079.
+Epoch 84. train_loss: 8.73460919. accuracy 0.0. orientation_error 37.852864836810234. point_error 0.24314369008592937. Current lr : 0.00047009.
+Epoch 85. train_loss: 7.96602853. accuracy 0.0. orientation_error 43.077889718049406. point_error 0.24190665334463118. Current lr : 0.00046938.
+Epoch 86. train_loss: 7.51162467. val_loss: 6.29100818. accuracy 0.0. orientation_error 13.34607390834356. point_error 0.338117852807045. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00046867.
+Epoch 87. train_loss: 8.43597343. accuracy 0.0. orientation_error 34.612659344810105. point_error 0.23456881765438162. Current lr : 0.00046794.
+Epoch 88. train_loss: 7.44570982. accuracy 0.0. orientation_error 29.994173483504667. point_error 0.21905729660521384. Current lr : 0.00046721.
+Epoch 89. train_loss: 8.49273871. accuracy 0.0. orientation_error 39.0320008150802. point_error 0.24452952038010825. Current lr : 0.00046647.
+Epoch 90. train_loss: 8.39117733. accuracy 0.0. orientation_error 41.59706395491363. point_error 0.23008036500085954. Current lr : 0.00046573.
+Epoch 91. train_loss: 7.84803761. val_loss: 6.38505388. accuracy 0.0. orientation_error 58.40363293816508. point_error 0.40412634226583666. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00046497.
+Epoch 92. train_loss: 7.40990515. accuracy 0.0. orientation_error 38.15108306202644. point_error 0.2532071455341318. Current lr : 0.00046421.
+Epoch 93. train_loss: 7.70338326. accuracy 0.0. orientation_error 38.035914618484874. point_error 0.23288937832998194. Current lr : 0.00046344.
+Epoch 94. train_loss: 8.40605464. accuracy 0.0. orientation_error 35.01085748721536. point_error 0.2274760202869125. Current lr : 0.00046267.
+Epoch 95. train_loss: 8.25320115. accuracy 0.0. orientation_error 41.35447402641668. point_error 0.23440841727930567. Current lr : 0.00046188.
+Epoch 96. train_loss: 7.61844021. val_loss: 6.06491580. accuracy 0.0. orientation_error 9.81336469161637. point_error 0.34425044252026465. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00046109.
+Epoch 97. train_loss: 7.98184374. accuracy 0.0. orientation_error 31.803324116092668. point_error 0.24431759995286878. Current lr : 0.00046029.
+Epoch 98. train_loss: 7.91700245. accuracy 0.0. orientation_error 41.463602974279645. point_error 0.2246689508466617. Current lr : 0.00045949.
+Epoch 99. train_loss: 8.03998507. accuracy 0.0. orientation_error 33.7249816749056. point_error 0.24730458826474522. Current lr : 0.00045868.
+Epoch 100. train_loss: 7.58179795. accuracy 0.0. orientation_error 36.09371315287356. point_error 0.23285984946009905. Current lr : 0.00045786.
+Epoch 101. train_loss: 7.23429486. val_loss: 6.38677452. accuracy 0.0. orientation_error 66.45649122742954. point_error 0.42958159792807793. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00045703.
+Epoch 102. train_loss: 8.71988805. accuracy 0.0. orientation_error 42.02974829274348. point_error 0.25140827466612276. Current lr : 0.00045619.
+Epoch 103. train_loss: 7.29212505. accuracy 0.0. orientation_error 32.6170535364094. point_error 0.22149118727639966. Current lr : 0.00045535.
+Epoch 104. train_loss: 7.06237155. accuracy 0.0. orientation_error 35.78137670868894. point_error 0.23857654624659083. Current lr : 0.00045450.
+Epoch 105. train_loss: 8.68327103. accuracy 0.0. orientation_error 42.2556049726871. point_error 0.23975590692590112. Current lr : 0.00045365.
+Epoch 106. train_loss: 7.73407541. val_loss: 6.27696306. accuracy 0.0. orientation_error 64.47379478008142. point_error 0.39478450052199826. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00045278.
+Epoch 107. train_loss: 8.28160430. accuracy 0.0. orientation_error 36.409684234448434. point_error 0.2397992503059947. Current lr : 0.00045191.
+Epoch 108. train_loss: 8.15146958. accuracy 0.0. orientation_error 38.20213044925925. point_error 0.22345251978739447. Current lr : 0.00045104.
+Epoch 109. train_loss: 7.73501136. accuracy 0.0. orientation_error 33.83830032652254. point_error 0.23573956933358442. Current lr : 0.00045015.
+Epoch 110. train_loss: 9.00409752. accuracy 0.0. orientation_error 39.91063781806938. point_error 0.22387872620121294. Current lr : 0.00044926.
+Epoch 111. train_loss: 7.43454827. val_loss: 6.25695135. accuracy 0.0. orientation_error 12.318463218069905. point_error 0.3425160257085677. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00044837.
+Epoch 112. train_loss: 7.87566290. accuracy 0.0. orientation_error 29.61737088697617. point_error 0.23120495093905408. Current lr : 0.00044746.
+Epoch 113. train_loss: 7.55023648. accuracy 0.0. orientation_error 37.82811607618983. point_error 0.24119535043187765. Current lr : 0.00044655.
+Epoch 114. train_loss: 8.21380906. accuracy 0.0. orientation_error 32.48191276026504. point_error 0.23292656053343544. Current lr : 0.00044563.
+Epoch 115. train_loss: 7.67035925. accuracy 0.0. orientation_error 33.754452909505694. point_error 0.2286268431207408. Current lr : 0.00044471.
+Epoch 116. train_loss: 8.96983958. val_loss: 6.77499280. accuracy 0.0. orientation_error 56.32111061166776. point_error 0.3674044859024786. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00044377.
+Epoch 117. train_loss: 8.20375833. accuracy 0.0. orientation_error 45.26717724089827. point_error 0.2354708796610003. Current lr : 0.00044284.
+Epoch 118. train_loss: 7.47891490. accuracy 0.0. orientation_error 37.114708465230486. point_error 0.2457598625479833. Current lr : 0.00044189.
+Epoch 119. train_loss: 7.51378949. accuracy 0.0. orientation_error 42.074861424542256. point_error 0.24853872556401335. Current lr : 0.00044094.
+Epoch 120. train_loss: 7.52935531. accuracy 0.0. orientation_error 34.29325835000248. point_error 0.22345071386383927. Current lr : 0.00043998.
+Epoch 121. train_loss: 9.23220920. val_loss: 6.06017386. accuracy 0.0. orientation_error 9.388945182356753. point_error 0.360194131731987. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00043902.
+Epoch 122. train_loss: 8.14309488. accuracy 0.0. orientation_error 30.237141320493993. point_error 0.24799120231815006. Current lr : 0.00043805.
+Epoch 123. train_loss: 7.49228317. accuracy 0.0. orientation_error 33.8610501755315. point_error 0.23809054704464. Current lr : 0.00043707.
+Epoch 124. train_loss: 8.47175439. accuracy 0.0. orientation_error 39.49246603922731. point_error 0.2313251037798498. Current lr : 0.00043609.
+Epoch 125. train_loss: 7.65701636. accuracy 0.0. orientation_error 36.46946443540319. point_error 0.23918889712380326. Current lr : 0.00043510.
+Epoch 126. train_loss: 7.32430182. val_loss: 5.93371522. accuracy 0.0. orientation_error 9.152392944891293. point_error 0.3309119218780148. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00043410.
+Epoch 127. train_loss: 7.60147133. accuracy 0.0. orientation_error 41.021618648279606. point_error 0.25188137558491336. Current lr : 0.00043310.
+Epoch 128. train_loss: 7.67654552. accuracy 0.0. orientation_error 41.17247653728165. point_error 0.24311081268217252. Current lr : 0.00043209.
+Epoch 129. train_loss: 8.19897070. accuracy 0.0. orientation_error 39.36193619548997. point_error 0.23317630893510322. Current lr : 0.00043107.
+Epoch 130. train_loss: 8.19786222. accuracy 0.0. orientation_error 36.05409664779009. point_error 0.23144061118364334. Current lr : 0.00043005.
+Epoch 131. train_loss: 8.03202048. val_loss: 6.34298333. accuracy 0.0. orientation_error 67.83699160744061. point_error 0.37530518683695024. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00042902.
+Epoch 132. train_loss: 7.76316707. accuracy 0.0. orientation_error 41.89791063267764. point_error 0.22815010252854098. Current lr : 0.00042799.
+Epoch 133. train_loss: 8.44436202. accuracy 0.0. orientation_error 31.075658384710245. point_error 0.23755403203160866. Current lr : 0.00042695.
+Epoch 134. train_loss: 8.27288587. accuracy 0.0. orientation_error 33.302808640285015. point_error 0.2442924415125795. Current lr : 0.00042590.
+Epoch 135. train_loss: 7.41286575. accuracy 0.0. orientation_error 38.30467463163115. point_error 0.22686464783290158. Current lr : 0.00042485.
+Epoch 136. train_loss: 8.65202530. val_loss: 6.70150420. accuracy 0.0. orientation_error 66.96711327349199. point_error 0.40237017216220977. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00042380.
+Epoch 137. train_loss: 7.70249140. accuracy 0.0. orientation_error 46.70887195737976. point_error 0.22451227456331252. Current lr : 0.00042273.
+Epoch 138. train_loss: 8.35420331. accuracy 0.0. orientation_error 42.919173022092465. point_error 0.23593077695240144. Current lr : 0.00042166.
+Epoch 139. train_loss: 8.21729946. accuracy 0.0. orientation_error 34.57252672657573. point_error 0.24456242933545425. Current lr : 0.00042059.
+Epoch 140. train_loss: 7.62340991. accuracy 0.0. orientation_error 42.201664174258305. point_error 0.24536292876886284. Current lr : 0.00041951.
+Epoch 141. train_loss: 7.37993526. val_loss: 6.56076148. accuracy 0.0. orientation_error 71.31368246269709. point_error 0.3603015681428294. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00041842.
+Epoch 142. train_loss: 8.28049978. accuracy 0.0. orientation_error 34.21017025815503. point_error 0.25149678566857525. Current lr : 0.00041733.
+Epoch 143. train_loss: 8.34544814. accuracy 0.0. orientation_error 42.43378995244364. point_error 0.23758950967179693. Current lr : 0.00041623.
+Epoch 144. train_loss: 8.85952031. accuracy 0.0. orientation_error 36.27444804554464. point_error 0.22813110910356044. Current lr : 0.00041513.
+Epoch 145. train_loss: 7.73291573. accuracy 0.0. orientation_error 44.6366884229511. point_error 0.26034298576414583. Current lr : 0.00041402.
+Epoch 146. train_loss: 8.61150572. val_loss: 6.47845739. accuracy 0.0. orientation_error 54.17029301175515. point_error 0.3617282711690472. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00041290.
+Epoch 147. train_loss: 8.12083242. accuracy 0.0. orientation_error 43.73600115870333. point_error 0.2363438782484635. Current lr : 0.00041178.
+Epoch 148. train_loss: 7.85573898. accuracy 0.0. orientation_error 28.994323172977627. point_error 0.22242051081165023. Current lr : 0.00041066.
+Epoch 149. train_loss: 8.95185053. accuracy 0.0. orientation_error 32.267678697754725. point_error 0.2419522681961889. Current lr : 0.00040953.
+Epoch 150. train_loss: 7.40953542. accuracy 0.0. orientation_error 42.06257145934437. point_error 0.23899613816453064. Current lr : 0.00040839.
+Epoch 151. train_loss: 7.26102830. val_loss: 6.56642091. accuracy 0.0. orientation_error 63.476883792493396. point_error 0.4086286939920918. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00040725.
+Epoch 152. train_loss: 7.69195686. accuracy 0.0. orientation_error 39.649098226258054. point_error 0.23528653551702913. Current lr : 0.00040611.
+Epoch 153. train_loss: 8.20519480. accuracy 0.0. orientation_error 40.719380272797196. point_error 0.22616537843385467. Current lr : 0.00040495.
+Epoch 154. train_loss: 7.59985601. accuracy 0.0. orientation_error 28.52870165583944. point_error 0.236719898506999. Current lr : 0.00040380.
+Epoch 155. train_loss: 8.47640853. accuracy 0.0. orientation_error 32.110321613910706. point_error 0.22546620321986469. Current lr : 0.00040264.
+Epoch 156. train_loss: 7.87920705. val_loss: 6.31469588. accuracy 0.0. orientation_error 14.174113630060686. point_error 0.3869509009584304. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00040147.
+Epoch 157. train_loss: 7.46765848. accuracy 0.0. orientation_error 39.84464573365641. point_error 0.24158748074070266. Current lr : 0.00040030.
+Epoch 158. train_loss: 8.14498586. accuracy 0.0. orientation_error 37.7086352782126. point_error 0.2411125050128802. Current lr : 0.00039912.
+Epoch 159. train_loss: 8.07482305. accuracy 0.0. orientation_error 31.411672470393665. point_error 0.221385250305352. Current lr : 0.00039794.
+Epoch 160. train_loss: 7.68134745. accuracy 0.0. orientation_error 37.24341633941748. point_error 0.25391406288937385. Current lr : 0.00039675.
+Epoch 161. train_loss: 8.35326982. val_loss: 6.02395131. accuracy 0.0. orientation_error 62.04914347994112. point_error 0.30907255170806763. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00039556.
+Epoch 162. train_loss: 8.05028768. accuracy 0.0. orientation_error 35.574878279106464. point_error 0.2285301331916581. Current lr : 0.00039437.
+Epoch 163. train_loss: 7.37862137. accuracy 0.0. orientation_error 30.142415525984543. point_error 0.2323429322923007. Current lr : 0.00039316.
+Epoch 164. train_loss: 7.98938216. accuracy 0.0. orientation_error 25.696600992872288. point_error 0.24141713639964227. Current lr : 0.00039196.
+Epoch 165. train_loss: 8.43713874. accuracy 0.0. orientation_error 39.551069341565565. point_error 0.24689556774885757. Current lr : 0.00039075.
+Epoch 166. train_loss: 8.04000931. val_loss: 6.60297583. accuracy 0.0. orientation_error 66.70641870897423. point_error 0.3961617292896394. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00038953.
+Epoch 167. train_loss: 8.45292861. accuracy 0.0. orientation_error 44.3634062705058. point_error 0.2530774850560271. Current lr : 0.00038832.
+Epoch 168. train_loss: 8.48426518. accuracy 0.0. orientation_error 47.75147955599188. point_error 0.24350214769010958. Current lr : 0.00038709.
+Epoch 169. train_loss: 8.38118059. accuracy 0.0. orientation_error 43.27816479985657. point_error 0.2470301948973666. Current lr : 0.00038586.
+Epoch 170. train_loss: 8.28604401. accuracy 0.0. orientation_error 46.01092840858473. point_error 0.24614073635767336. Current lr : 0.00038463.
+Epoch 171. train_loss: 8.65792430. val_loss: 6.42746979. accuracy 0.0. orientation_error 12.141761838690025. point_error 0.3858042782352817. Best Epoch: 26. Best val loss: 5.81120310.                     Current lr : 0.00038339.

@@ -1,0 +1,59 @@
+Namespace(evaluate=False, base_dir='/home/pradyumngoya/unity_data', dataset_path='snippets/data/partnet_mobility_root/attention', use_detach=True, checkpoint_folder='checkpoints/', resume_file='model_best.pth.tar', enable_flash=False, base_output='sh_train', checkpoint='checkpoint', runs='runs', logs='logs.txt', redirect_logs=False, batch_size=8, max_seq_len=8, max_motion_vectors=1, num_workers=4, epochs=400, lr=0.005, min_lr=1e-05, warmup_epochs=10, weight_decay=0.01, train_split_ratio=0.8, device='cuda:0')
+self.data_path='/home/pradyumngoya/unity_data/snippets/data/mobilities/args.use_detach=True'
+self.data_path='/home/pradyumngoya/unity_data/snippets/data/mobilities/args.use_detach=True'
+len(train_dataset)=8404
+len(test_dataset)=2104
+starting training
+  0%|          | 0/1050 [00:00<?, ?it/s]  0%|          | 0/1050 [01:23<?, ?it/s]
+Traceback (most recent call last):
+  File "/home/pradyumngoya/unity_data/Partnet/Unsupervised/attention_model/train.py", line 203, in <module>
+    main(args)
+  File "/home/pradyumngoya/unity_data/Partnet/Unsupervised/attention_model/train.py", line 174, in main
+    train_loss = train(train_loader, model, optimizer)
+  File "/home/pradyumngoya/unity_data/Partnet/Unsupervised/attention_model/train.py", line 79, in train
+    output, label = model(batch_data)
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1511, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1520, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/pradyumngoya/unity_data/Partnet/Unsupervised/attention_model/models/main.py", line 117, in forward
+    point_out = self.backbone(point_transformer_input)
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1511, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1520, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/pradyumngoya/unity_data/Partnet/Unsupervised/attention_model/models/Point_transformer_V3.py", line 1002, in forward
+    point = self.enc(point)
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1511, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1520, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/pradyumngoya/unity_data/Partnet/Unsupervised/attention_model/models/Point_transformer_V3.py", line 233, in forward
+    input = module(input)
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1511, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1520, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/pradyumngoya/unity_data/Partnet/Unsupervised/attention_model/models/Point_transformer_V3.py", line 233, in forward
+    input = module(input)
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1511, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1520, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/pradyumngoya/unity_data/Partnet/Unsupervised/attention_model/models/Point_transformer_V3.py", line 609, in forward
+    point = self.drop_path(self.attn(point))
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1511, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1520, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/pradyumngoya/unity_data/Partnet/Unsupervised/attention_model/models/Point_transformer_V3.py", line 477, in forward
+    attn = self.softmax(attn)
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1511, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1520, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/modules/activation.py", line 1514, in forward
+    return F.softmax(input, self.dim, _stacklevel=5)
+  File "/home/pradyumngoya/.local/lib/python3.10/site-packages/torch/nn/functional.py", line 1858, in softmax
+    ret = input.softmax(dim)
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.65 GiB. GPU 0 has a total capacity of 47.52 GiB of which 111.62 MiB is free. Process 242963 has 33.30 GiB memory in use. Including non-PyTorch memory, this process has 13.18 GiB memory in use. Of the allocated memory 12.70 GiB is allocated by PyTorch, and 173.37 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
