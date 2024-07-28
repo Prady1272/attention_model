@@ -49,58 +49,61 @@ def split_directories(dataset_path, training_data_dir, train_ratio=0.8,split_tra
             print(e)
             continue
 
+    for i in range(3):
     #use this if not using semi split
-    if not use_semi_split:
-        train_split,val_split,test_split = defaultdict(list),defaultdict(list),defaultdict(list)
-        for category in cat_shape_dict:
-            random.shuffle(cat_shape_dict[category])
-            split_test_index = int(len(cat_shape_dict[category]) * train_ratio)
-            split_val_index = int(len(cat_shape_dict[category])*(train_ratio-0.1))
-            print(f'{category} {split_val_index=} {split_test_index=}  {len(cat_shape_dict[category])=}')
-            train_split[category] = cat_shape_dict[category][:split_val_index]
-            train_split[category] = ["_".join([category,shape])+".pth" for shape in train_split[category] ]
-            val_split[category] = cat_shape_dict[category][split_val_index:split_test_index]
-            val_split[category] = ["_".join([category,shape])+".pth" for shape in val_split[category] ]
-            test_split[category] = cat_shape_dict[category][split_test_index:]
-            test_split[category] = ["_".join([category,shape])+".pth" for shape in test_split[category] ]
+        if not use_semi_split:
+            train_split,val_split,test_split = defaultdict(list),defaultdict(list),defaultdict(list)
+            for category in cat_shape_dict:
+                random.shuffle(cat_shape_dict[category])
+                split_test_index = int(len(cat_shape_dict[category]) * train_ratio)
+                split_val_index = int(len(cat_shape_dict[category])*(train_ratio-0.2))
+                print(f'{category} {split_val_index=} {split_test_index=}  {len(cat_shape_dict[category])=}')
+                train_split[category] = cat_shape_dict[category][:split_val_index]
+                train_split[category] = ["_".join([category,shape])+".pth" for shape in train_split[category] ]
+                val_split[category] = cat_shape_dict[category][split_val_index:split_test_index]
+                val_split[category] = ["_".join([category,shape])+".pth" for shape in val_split[category] ]
+                test_split[category] = cat_shape_dict[category][split_test_index:]
+                test_split[category] = ["_".join([category,shape])+".pth" for shape in test_split[category] ]
 
-    #do not use this if not using semi split
-    else:
-        train_split,val_split,test_split = defaultdict(list),defaultdict(list),defaultdict(list)
-        for category in cat_shape_dict:
-            #  this first gets the training shapes and then from the training shapes gets the val index
-            category_train_shapes = list(set(cat_shape_dict[category]) & set(semi_train_shapes[category]))
-            random.shuffle(category_train_shapes)
-            split_val_index = int(len(category_train_shapes) * split_train_val)
+        #do not use this if not using semi split
+        else:
+            train_split,val_split,test_split = defaultdict(list),defaultdict(list),defaultdict(list)
+            for category in cat_shape_dict:
+                #  this first gets the training shapes and then from the training shapes gets the val index
+                category_train_shapes = list(set(cat_shape_dict[category]) & set(semi_train_shapes[category]))
+                random.shuffle(category_train_shapes)
+                split_val_index = int(len(category_train_shapes) * split_train_val)
+            
+                for shape in category_train_shapes[:split_val_index]:
+                    train_split[category].append("_".join([category,shape])+".pth")
+
+                for shape in category_train_shapes[split_val_index:]:
+                    val_split[category].append("_".join([category,shape])+".pth")
+                # just gets the test split
+                category_test_shapes = list(set(cat_shape_dict[category]) & set(semi_test_shapes[category]))
+                print(f'{category}  {split_val_index} {len(category_train_shapes)-split_val_index} {len(category_test_shapes)}')
+                for shape in category_test_shapes:
+                    test_split[category].append("_".join([category,shape])+".pth")
+
         
-            for shape in category_train_shapes[:split_val_index]:
-                train_split[category].append("_".join([category,shape])+".pth")
+        
 
-            for shape in category_train_shapes[split_val_index:]:
-                val_split[category].append("_".join([category,shape])+".pth")
-            # just gets the test split
-            category_test_shapes = list(set(cat_shape_dict[category]) & set(semi_test_shapes[category]))
-            print(f'{category}  {split_val_index} {len(category_train_shapes)-split_val_index} {len(category_test_shapes)}')
-            for shape in category_test_shapes:
-                test_split[category].append("_".join([category,shape])+".pth")
-
-    
-    
+        
 
     
 
-  
+        # writing to a json file
+        with open(os.path.join(shapes_data_dir, f'train_{i}.json'), 'w') as f_train:
+            json.dump(train_split,f_train,indent=4)
 
-    # writing to a json file
-    with open(os.path.join(shapes_data_dir, 'train.json'), 'w') as f_train:
-        json.dump(train_split,f_train,indent=4)
-    
-    with open(os.path.join(shapes_data_dir, 'test.json'), 'w') as f_test:
-        json.dump(test_split,f_test,indent=4)
+        with open(os.path.join(shapes_data_dir, f'val_{i}.json'), 'w') as f_val:
+            json.dump(val_split,f_val,indent=4)
+        
+        with open(os.path.join(shapes_data_dir, f'test_{i}.json'), 'w') as f_test:
+            json.dump(test_split,f_test,indent=4)
 
-    
-    with open(os.path.join(shapes_data_dir, 'val.json'), 'w') as f_val:
-        json.dump(val_split,f_val,indent=4)
+        
+       
     
 
 # Usage example:
@@ -108,10 +111,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process base directory and dataset path.')
     parser.add_argument('--base_dir', type=str, default='/home/pradyumngoya/working_dr', 
                         help='Base directory path')
-    parser.add_argument('--dataset_path', type=str, default='snippets/data/partnet_root', 
+    parser.add_argument('--dataset_path', type=str, default='snippets/data/partnet_mobility_root', 
                         help='Dataset path')
 
-    parser.add_argument('--training_data_dir', type=str, default='pretrain_transformer_mobilities', 
+    parser.add_argument('--training_data_dir', type=str, default='fine_transformer_mobilities', 
                         help='training_data')
 
     args = parser.parse_args()
