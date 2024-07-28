@@ -74,7 +74,8 @@ def get_args():
     parser.add_argument("--num_workers", type=int,default=4)
     parser.add_argument("--loop", type=int,default=1)
     parser.add_argument("--max_shapes",default=int(10e8),type=int)
-    parser.add_argument("--category", type=str,default='Scissors')
+    parser.add_argument("--category",type=str,default='Bottle')
+    parser.add_argument("--category_index", type=int,default=0)
     
 
     # hyperameters of network/options for training
@@ -266,6 +267,8 @@ def main(args):
    
     best_loss = 2e10
     best_epoch = -1
+    categories = ["Bottle", "Refrigerator", "Display", "Laptop", "Knife", "Clock",  "Scissors", "Door", "Pen", "Pliers", "Oven", "Cart", "USB"]
+    args.category = categories[args.category_index]
 
     print(args)
     args.base_output += "_ep" if args.encode_part else "" 
@@ -318,9 +321,9 @@ def main(args):
         motion_type_bins, orientation_bins,num_parts = compute_stats_transform(args)
         if not args.pretraining:
             args.max_seq_len = max_number_parts(torch.tensor(num_parts))
-            args.batch_size = int(math.floor(220/args.max_seq_len))
+            args.batch_size = max(int(math.floor(220/args.max_seq_len)),1) # depends on the true sequence length
         else:
-            args.loop =  max(int(math.floor(max_number_parts(torch.tensor(num_parts))/args.max_seq_len)),1)
+            args.loop =  max(int(math.floor(max_number_parts(torch.tensor(num_parts))/args.max_seq_len)),1) # depends on the working sequence length
     elif args.model == 'mlp':
         motion_type_bins, orientation_bins = compute_stats(args)
     
