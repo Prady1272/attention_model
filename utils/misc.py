@@ -27,8 +27,8 @@ def generate_fine_tuning_paths(args):
         time_stamps.sort(reverse=True)
         latest_time_stamp = time_stamps[0]
     else:
-        if args.split_index == 0:
-            print("pretraining is empty and the training index is 0 creating a new time stamp")
+        if args.split_index == 0 or not os.path.exists(os.path.join(args.base_output,args.category,'fine_tuning')):
+            print("pretraining is empty and the training index is 0 or fine tuning does not exist creating a new time stamp")
             local_time = time.localtime()
             time_string = time.strftime("%Y-%m-%d %H:%M", local_time)
             time_string = time_string.replace(" ", "_")

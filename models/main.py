@@ -3,10 +3,10 @@ from torch import Tensor
 import torch.nn as nn
 from torch.nn import TransformerEncoderLayer, TransformerEncoder
 from torch.nn.utils.rnn import pad_sequence
-from .Point_transformer_V3 import Point,PointTransformerV3
+# from .Point_transformer_V3 import Point,PointTransformerV3
 from torch.nn import MultiheadAttention
 from .transformer_encoder_layer import TransformerEncoderLayerCustom
-import torch_scatter
+# import torch_scatter
 from .DGCNN import DGCNN_cls
 import numpy as np
 

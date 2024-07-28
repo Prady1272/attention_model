@@ -127,7 +127,7 @@ def train(additional_arguments,train_loader, model,multitaskloss_instance, optim
     residual_loss_sum = 0
     point_loss_sum = 0
 
-    for batch_data in tqdm((train_loader)):
+    for batch_data in tqdm((train_loader),disable=True):
 
 
         optimizer.zero_grad()
@@ -194,7 +194,7 @@ def val(additional_arguments,val_loader, model, multitaskloss_instance,
 
     oriented_axis = fibonacci_sphere()
 
-    for batch_data in tqdm(val_loader):
+    for batch_data in tqdm(val_loader,disable=True):
         with torch.no_grad():
 
             output = model(batch_data)
