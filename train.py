@@ -55,13 +55,13 @@ def get_args():
 
     # model parameters
     parser.add_argument('--model',default='transformer')
-    parser.add_argument('--use_multi_loss',type=bool,default=True)
+    parser.add_argument('--use_multi_loss',action="store_false")
     parser.add_argument('--loss_red',default='mean')
     parser.add_argument('--features_reduce',default='mean')
     parser.add_argument('--not_enable_flash',action='store_true',default=False)
     parser.add_argument('--obb_red',default='mean')
-    parser.add_argument('--encode_part',type=bool,default=True)
-    parser.add_argument('--encode_shape',type=bool,default=True)
+    parser.add_argument('--encode_part',action='store_false')
+    parser.add_argument('--encode_shape',action='store_false')
     parser.add_argument('--num_layers',default=1,type=int)
     parser.add_argument('--use_type_weights',action='store_true')
     parser.add_argument('--use_orientation_weights',action='store_true')

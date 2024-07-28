@@ -19,6 +19,6 @@ base_dir=/scratch/workspace/pradyumngoya_umass_edu-merge/
 data_root=partnet_mobility_root
 split_index=0
 python -u train.py --base_dir=$base_dir --data_root=$data_root --split_index=$split_index --category_index=$SLURM_ARRAY_TASK_ID
-python -u train.py --base_dir=$base_dir --data_root=$data_root --split_index=$split_index --encode_part=False --category_index=$SLURM_ARRAY_TASK_ID
-python -u train.py --base_dir=$base_dir --data_root=$data_root --split_index=$split_index --encode_shape=False --category_index=$SLURM_ARRAY_TASK_ID
-python -u train.py --base_dir=$base_dir --data_root=$data_root --split_index=$split_index --encode_part=False --encode_shape=False --category_index=$SLURM_ARRAY_TASK_ID
+python -u train.py --base_dir=$base_dir --data_root=$data_root --split_index=$split_index --encode_part --category_index=$SLURM_ARRAY_TASK_ID
+python -u train.py --base_dir=$base_dir --data_root=$data_root --split_index=$split_index --encode_shape --category_index=$SLURM_ARRAY_TASK_ID
+python -u train.py --base_dir=$base_dir --data_root=$data_root --split_index=$split_index --encode_part --encode_shape --category_index=$SLURM_ARRAY_TASK_ID
