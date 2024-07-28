@@ -3,3 +3,5 @@ legacy/*
 __pycache__
 /home/pradyumngoya/working_dr/Partnet/Unsupervised/SWMP/NetworkDataExtract/OBBcalculation/Input/*
 /home/pradyumngoya/working_dr/Partnet/Unsupervised/SWMP/NetworkDataExtract/OBBcalculation/Output/*
+train_output/*
+!train_output/*.csv

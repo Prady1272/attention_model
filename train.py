@@ -1,4 +1,5 @@
 import os
+import csv
 import shutil
 import argparse
 import numpy as np
@@ -37,6 +38,7 @@ def get_args():
     # paths you may want to adjust
     parser.add_argument('--base_dir',default='/home/pradyumngoya/working_dr')
     parser.add_argument('--data_root',default='snippets/data/partnet_mobility_root')
+    parser.add_argument('--split_index',type=int,default=0)
     #output paths
     parser.add_argument('--base_output',default='./train_output')
     parser.add_argument('--checkpoint',default='checkpoint')
@@ -265,6 +267,10 @@ def main(args):
     best_loss = 2e10
     best_epoch = -1
 
+    print(args)
+    args.base_output += "_ep" if args.encode_part else "" 
+    args.base_output += "_es" if args.encode_shape else ""
+
     # taking care of model dependent variables
     if args.pretraining:
         args.data_root = os.path.join(args.data_root,f'pretrain_transformer_mobilities')
@@ -294,12 +300,17 @@ def main(args):
         collate_fn = custom_collate_fn
 
     # remove this
-    motion_type_bins, orientation_bins,num_parts = compute_stats_transform(args,split='train')
-    print(f'train {motion_type_bins=} {orientation_bins=}')
-    motion_type_bins, orientation_bins,num_parts = compute_stats_transform(args,split='val')
-    print(f'val {motion_type_bins=} {orientation_bins=}')
-    motion_type_bins, orientation_bins,num_parts = compute_stats_transform(args,split='test')
-    print(f'test {motion_type_bins=} {orientation_bins=}')
+    for temp_split_index in range(3):
+        motion_type_bins, orientation_bins,num_parts = compute_stats_transform(args,split='train',split_index=temp_split_index)
+        print(f'train {temp_split_index=} {motion_type_bins=} {orientation_bins=}')
+        
+    for temp_split_index in range(3):
+        motion_type_bins, orientation_bins,num_parts = compute_stats_transform(args,split='val',split_index=temp_split_index)
+        print(f'val {temp_split_index=} {motion_type_bins=} {orientation_bins=}')
+    
+    for temp_split_index in range(3):
+        motion_type_bins, orientation_bins,num_parts = compute_stats_transform(args,split='test',split_index=temp_split_index)
+        print(f'test {temp_split_index =} {motion_type_bins=} {orientation_bins=}')
 
 
     # taking care of bins
@@ -344,19 +355,18 @@ def main(args):
 
     #making the output paths
     # Get the current local time
-    
-    if(not args.resume_train and not args.test and args.pretraining): # starting from scratch pretraining case 1
-        checkpoint,runs = generate_pretraining_paths(args)
+    if(not args.resume_train and args.pretraining): # starting from scratch pretraining case 1
+        checkpoint,runs,csv_file = generate_pretraining_paths(args)
         print("its starting from scratch Pretraining")
         print(f'{checkpoint=}')
 
     elif(args.resume_train or args.test): # takes care of case 2 and 4 and 5. (4 and 5 same path will be retrieved)
-        checkpoint,runs = retrieve_paths(args) # just retrieves the latest path according to pretraining
+        checkpoint,runs,csv_file = retrieve_paths(args) # just retrieves the latest path according to pretraining
         print("its resuming")
         print(f'{checkpoint=}')
     
     elif not args.pretraining: # this is fine tuning
-        checkpoint, runs = generate_fine_tuning_paths(args)
+        checkpoint, runs,csv_file = generate_fine_tuning_paths(args)
         print('fine tuning')
         print(f'{checkpoint=}')
 
@@ -398,9 +408,9 @@ def main(args):
 
     #print("=> Total params: %.2fM" % (sum(p.numel() for p in model.parameters()) / 1000000.0))
     # initializing the datasets
-    train_dataset = Mobility_Dataset(base_dir=args.base_dir,data_root=args.data_root, split='train',category=args.category,max_seq_len=args.max_seq_len, loop=args.loop,max_shapes=args.max_shapes)
-    test_dataset = Mobility_Dataset(base_dir=args.base_dir,data_root=args.data_root, split='test',category=args.category,max_seq_len=args.max_seq_len, loop=1)
-    val_dataset = Mobility_Dataset(base_dir=args.base_dir,data_root=args.data_root, split='val',category=args.category,max_seq_len=args.max_seq_len, loop=1)
+    train_dataset = Mobility_Dataset(base_dir=args.base_dir,data_root=args.data_root, split='train',split_index = args.split_index,category=args.category,max_seq_len=args.max_seq_len, loop=args.loop,max_shapes=args.max_shapes)
+    test_dataset = Mobility_Dataset(base_dir=args.base_dir,data_root=args.data_root, split='test',split_index = args.split_index,category=args.category,max_seq_len=args.max_seq_len, loop=1)
+    val_dataset = Mobility_Dataset(base_dir=args.base_dir,data_root=args.data_root, split='val',split_index = args.split_index,category=args.category,max_seq_len=args.max_seq_len, loop=1)
     print(f'{len(train_dataset)=}')
     print(f'{len(test_dataset)=}')
     print(f'{len(val_dataset)=}')
@@ -471,7 +481,13 @@ def main(args):
             
             
 
-        
+    loss,type_loss,orientation_loss,residual_loss,point_loss = test_losses
+    type_accuracy,orientation_error, point_error = test_errors
+    row= [loss,type_loss,orientation_loss,residual_loss,point_loss,type_accuracy,orientation_error, point_error]
+    
+    with open(csv_file, mode='w', newline='') as file:
+        csv_writer = csv.writer(file)
+        csv_writer.writerow(row)
     
     writer.flush()
     writer.close()

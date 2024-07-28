@@ -1,6 +1,6 @@
 
 for category in "Display" "Laptop" "Knife" "Clock"  "Scissors" "Door" "Pen" "Pliers" "Oven" "Cart" "USB" ; do
-  python train.py --model "transformer" --category "$category" > "transformer_l1_split2_layer_norm/$category.txt"
+  python train.py --model "transformer" --epochs 50 --category "$category" > "temp/$category.txt"
 done
 
 # currently working

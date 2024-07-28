@@ -22,12 +22,13 @@ import copy
 class Mobility_Dataset(Dataset):
     def __init__(
         self,
-        split=("train",),
+        split="train",
         base_dir="/home/pradyumngoya/unity_data",
         data_root="snippets/data/partnet_mobility_root/fine_tune_sorted_4",
         #the first should be normalizecoor and the last should be Merge
         transform=(normalize_according_shape,ToTensor),
         max_seq_len = 20,
+        split_index = 0,
         max_motion_vectors = 5,
         loop=4,
         num_points=2048,
@@ -38,6 +39,7 @@ class Mobility_Dataset(Dataset):
         self.data_path = os.path.join(base_dir,data_root)
         print(f'{self.data_path=}')
         self.split = split
+        self.split_index = split_index
         self.transform = transform
         self.loop = loop
         self.max_seq_len = max_seq_len
@@ -69,8 +71,8 @@ class Mobility_Dataset(Dataset):
         #     )
         # )
     
-    def get_data_list_helper(self,split):
-        files_path = os.path.join(self.data_path,split+'.json')
+    def get_data_list_helper(self):
+        files_path = os.path.join(self.data_path,self.split+f'_{self.split_index}.json')
         with open(files_path, 'r') as file:
             data = json.load(file)
         if self.category != 'all': 
@@ -84,7 +86,9 @@ class Mobility_Dataset(Dataset):
 
     def get_data_list(self):
         if isinstance(self.split, str):
-            data_list = self.get_data_list_helper(self.split)
+            data_list = self.get_data_list_helper()
+        else:
+            raise Exception
         return data_list
 
     

@@ -17,7 +17,7 @@ def generate_pretraining_paths(args):
     runs = os.path.join(base_output,args.runs)
     for path in [checkpoint,runs]:
         os.makedirs(path,exist_ok=True)
-    return checkpoint,runs
+    return checkpoint,runs,None
 
 
 def generate_fine_tuning_paths(args):
@@ -27,31 +27,47 @@ def generate_fine_tuning_paths(args):
         time_stamps.sort(reverse=True)
         latest_time_stamp = time_stamps[0]
     else:
-        print("pretraining is empty creating a new time stamp")
-        local_time = time.localtime()
-        time_string = time.strftime("%Y-%m-%d %H:%M", local_time)
-        time_string = time_string.replace(" ", "_")
-        time_string = time_string.replace(":", "_")
-        latest_time_stamp = time_string
-    base_output = os.path.join(args.base_output,args.category,'fine_tuning',latest_time_stamp)
+        if args.split_index == 0:
+            print("pretraining is empty and the training index is 0 creating a new time stamp")
+            local_time = time.localtime()
+            time_string = time.strftime("%Y-%m-%d %H:%M", local_time)
+            time_string = time_string.replace(" ", "_")
+            time_string = time_string.replace(":", "_")
+            latest_time_stamp = time_string
+        else:
+            print("pretraining is empty but the training index is not 0 using a prev time stamp")
+            base_output = os.path.join(args.base_output,args.category,'fine_tuning')
+            time_stamps = os.listdir(base_output)
+            time_stamps.sort(reverse=True)
+            latest_time_stamp = time_stamps[0]
+            assert int(latest_time_stamp)<3
+
+
+    base_output = os.path.join(args.base_output,args.category,'fine_tuning',latest_time_stamp,str(args.split_index))
     checkpoint = os.path.join(base_output,args.checkpoint)
     runs = os.path.join(base_output,args.runs)
+    csv = os.path.join(base_output,f'metrics.csv')
     for path in [checkpoint,runs]:
         os.makedirs(path,exist_ok=True)
-    return checkpoint,runs
+    return checkpoint,runs,csv
 
 
 
 def retrieve_paths(args):
-    assert args.resume_train or args.pretraining or args.test
+    assert args.resume_train or args.test
     base_output = os.path.join(args.base_output,args.category,"Pretraining" if args.pretraining else "fine_tuning")
     time_stamps = os.listdir(base_output)
     time_stamps.sort(reverse=True)
     latest_time_stamp = time_stamps[0]
     base_output = os.path.join(base_output,latest_time_stamp)
+    if not args.pretraining:
+        base_output = os.path.join(base_output,str(args.split_index))
+
+
     checkpoint = os.path.join(base_output,args.checkpoint)
     runs = os.path.join(base_output,args.runs)
-    return checkpoint, runs
+    csv = os.path.join(base_output,'metrics.csv')
+    return checkpoint, runs,csv
 
 def retrive_checkpoint_from_directory(args):
     base_output = args.test_ckpt_dir
@@ -415,8 +431,8 @@ def compute_stats(args,split='train'):
     return type_bin,label_bin
 
 
-def compute_stats_transform(args,split='train'):
-    with open (os.path.join(args.base_dir, args.data_root,f'{split}.json'),'r') as file:
+def compute_stats_transform(args,split='train',split_index=0):
+    with open (os.path.join(args.base_dir, args.data_root,f'{split}_{int(split_index)}.json'),'r') as file:
         data = json.load(file)
     
     all_paths = []
