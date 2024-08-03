@@ -27,7 +27,7 @@ def generate_fine_tuning_paths(args):
         time_stamps.sort(reverse=True)
         latest_time_stamp = time_stamps[0]
     else:
-        if args.split_index == 0 or not os.path.exists(os.path.join(args.base_output,args.category,'fine_tuning')):
+        if args.split_index == 0:
             print("pretraining is empty and the training index is 0 or fine tuning does not exist creating a new time stamp")
             local_time = time.localtime()
             time_string = time.strftime("%Y-%m-%d %H:%M", local_time)
@@ -40,7 +40,14 @@ def generate_fine_tuning_paths(args):
             time_stamps = os.listdir(base_output)
             time_stamps.sort(reverse=True)
             latest_time_stamp = time_stamps[0]
-            assert int(latest_time_stamp)<3
+            split_indices = os.listdir(os.path.join(args.base_output,args.category,'fine_tuning',latest_time_stamp))
+            split_indices.sort(reverse=True)
+            if str(args.split_index) in split_indices:
+                print("already done continue now")
+            assert int(split_indices[0])< args.split_index
+            assert int(split_indices[0]) == args.split_index-1
+
+            
 
 
     base_output = os.path.join(args.base_output,args.category,'fine_tuning',latest_time_stamp,str(args.split_index))
