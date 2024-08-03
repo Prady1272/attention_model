@@ -93,7 +93,7 @@ class TransformerEncoderLayerCustom(Module):
     def __init__(self, d_model: int, nhead: int, dim_feedforward: int = 2048, dropout: float = 0.1,
                  activation: Union[str, Callable[[Tensor], Tensor]] = F.relu,
                  layer_norm_eps: float = 1e-5, batch_first: bool = False, norm_first: bool = False,
-                 bias: bool = True, device=None, dtype=None) -> None:
+                 bias: bool = True, device=None, dtype=None,need_weights=False) -> None:
         factory_kwargs = {'device': device, 'dtype': dtype}
         super().__init__()
         self.self_attn = MultiheadAttention(d_model, nhead, dropout=dropout,
@@ -109,6 +109,7 @@ class TransformerEncoderLayerCustom(Module):
         self.norm2 = LayerNorm(d_model, eps=layer_norm_eps, bias=bias, **factory_kwargs)
         self.dropout1 = Dropout(dropout)
         self.dropout2 = Dropout(dropout)
+        self.need_weights = need_weights
 
 
         # We can't test self.activation in forward() in TorchScript,
@@ -169,12 +170,13 @@ class TransformerEncoderLayerCustom(Module):
             check_other=False,
         )
 
-    
+
+        attn_query,attn_output_weights = self._sa_block(query,key,value, src_mask, src_key_padding_mask, is_causal=is_causal)
      
-        query = self.norm1(query + self._sa_block(query,key,value, src_mask, src_key_padding_mask, is_causal=is_causal))
+        query = self.norm1(query + attn_query)
         query = self.norm2(query + self._ff_block(query))
 
-        return query
+        return query,attn_output_weights
 
 
     # self-attention block
@@ -183,11 +185,14 @@ class TransformerEncoderLayerCustom(Module):
             key: Tensor,
             value: Tensor,
             attn_mask: Optional[Tensor], key_padding_mask: Optional[Tensor], is_causal: bool = False) -> Tensor:
-        query = self.self_attn(query, key, value,
-                           attn_mask=attn_mask,
-                           key_padding_mask=key_padding_mask,
-                           need_weights=False, is_causal=is_causal)[0]
-        return self.dropout1(query)
+
+
+        query,attn_output_weights = self.self_attn(query, key, value,
+                        attn_mask=attn_mask,
+                        key_padding_mask=key_padding_mask,
+                        need_weights=self.need_weights, is_causal=is_causal)
+        
+        return self.dropout1(query),attn_output_weights
 
     # feed forward block
     def _ff_block(self, query: Tensor) -> Tensor:

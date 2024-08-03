@@ -90,6 +90,12 @@ def Shape_Consolidate(all_part_dicts,keys):
     if 'rotation_point' in keys:
         shape_dict['rotation_point'] = torch.stack([d['rotation_point'] for d in all_part_dicts])
     
+    if 'centroid' in keys:
+        shape_dict['centroid'] = torch.stack([d['centroid'] for d in all_part_dicts])
+
+    if 'm' in keys:
+        shape_dict['m'] = torch.stack([d['m'] for d in all_part_dicts])
+    
     if 'paths' in keys:
         shape_dict['paths'] = all_part_dicts[0]['paths']
     
@@ -102,6 +108,8 @@ def Shape_Consolidate(all_part_dicts,keys):
     if 'movable_id' in keys:
         shape_dict['movable_id'] = torch.tensor([d['movable_id'] for d in all_part_dicts],dtype=torch.int)
 
+    if 'part_index' in keys:
+        shape_dict['part_index'] = torch.tensor([d['part_index'] for d in all_part_dicts],dtype=torch.int)
     return shape_dict
     # for key in shape_dict:
     #     if key != 'paths':
@@ -139,6 +147,13 @@ def ToTensor(data_dict,keys):
         
         if 'rotation_point' in keys:
             data_dict['rotation_point'] = torch.tensor(data_dict['rotation_point']).float()
+
+        
+        if 'centroid' in data_dict.keys():
+            data_dict['centroid'] = torch.tensor(data_dict['centroid']).float()
+
+        if 'm' in data_dict.keys():
+            data_dict['m'] = torch.tensor([data_dict['m']]).float()
         
         return data_dict
 
@@ -256,6 +271,8 @@ def normalize_according_shape(data_dict,keys):
    
         data_dict["rotation_point"] -= centroid
         data_dict['rotation_point'] = data_dict['rotation_point']/m
+        data_dict['centroid'] = centroid
+        data_dict['m'] = m
         return data_dict
 
 def Normalizeshape(data_dict,keys):

@@ -97,10 +97,10 @@ class PointNet(nn.Module):
 
 
 class DGCNN_cls(nn.Module):
-    def __init__(self, output_channels=128,encode_part=False):
+    def __init__(self, output_channels=128,dropout=0.1,negative_slope=0.2,encode_part=False):
         super(DGCNN_cls, self).__init__()
         # self.args = args
-        dropout = 0.1
+        dropout = dropout
         emb_dims = 512
         self.k = 20
         self.encode_part = encode_part
@@ -113,22 +113,22 @@ class DGCNN_cls(nn.Module):
 
         self.conv1 = nn.Sequential(nn.Conv2d(6, 64, kernel_size=1, bias=False),
                                    self.bn1,
-                                   nn.LeakyReLU(negative_slope=0.2))
+                                   nn.LeakyReLU(negative_slope=negative_slope))
         self.conv2 = nn.Sequential(nn.Conv2d(64*2, 64, kernel_size=1, bias=False),
                                    self.bn2,
-                                   nn.LeakyReLU(negative_slope=0.2))
+                                   nn.LeakyReLU(negative_slope=negative_slope))
         self.conv3 = nn.Sequential(nn.Conv2d(64*2, 128, kernel_size=1, bias=False),
                                    self.bn3,
-                                   nn.LeakyReLU(negative_slope=0.2))
+                                   nn.LeakyReLU(negative_slope=negative_slope))
         self.conv4 = nn.Sequential(nn.Conv2d(128*2, 256, kernel_size=1, bias=False),
                                    self.bn4,
-                                   nn.LeakyReLU(negative_slope=0.2))
+                                   nn.LeakyReLU(negative_slope=negative_slope))
         # self.conv5 = nn.Sequential(nn.Conv1d(512, emb_dims, kernel_size=1, bias=False),
         #                            self.bn5,
         #                            nn.LeakyReLU(negative_slope=0.2))
         self.conv5 = nn.Sequential(nn.Conv1d(256, emb_dims, kernel_size=1, bias=False),
                                    self.bn5,
-                                   nn.LeakyReLU(negative_slope=0.2))
+                                   nn.LeakyReLU(negative_slope=negative_slope))
         # self.conv5 = nn.Sequential(nn.Conv1d(448, emb_dims, kernel_size=1, bias=False),
         #                            self.bn5,
         #                            nn.LeakyReLU(negative_slope=0.2))
