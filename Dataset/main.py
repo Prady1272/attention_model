@@ -81,7 +81,7 @@ class Mobility_Dataset(Dataset):
             data_list = []
             for category,item in data.items():
                 data_list.extend(item)
-        return data_list[:self.max_shapes]
+        return sorted(data_list)[:self.max_shapes]
 
 
     def get_data_list(self):
@@ -134,7 +134,7 @@ class Mobility_Dataset(Dataset):
         shape = self.data_list[idx % len(self.data_list)]
         path  =  os.path.join(self.data_path,shape)
         all_part_dicts = []
-        input_data = torch.load(path)
+        input_data = torch.load(path,map_location='cpu')
         # just for the cls
         cls_index = -1
         for i, part_dict in enumerate(input_data):
@@ -143,6 +143,7 @@ class Mobility_Dataset(Dataset):
                     print("two cls")
                     raise KeyError
                 cls_index = i
+            part_dict['part_index'] = i
         if cls_index==-1:
             print(f"{shape} does not have a cls points")
             raise KeyError
@@ -165,6 +166,7 @@ class Mobility_Dataset(Dataset):
             orientation_label = np.array(data['label'],dtype=int)
             g_truth_axis_com = np.array(data['g_truth_axis'],dtype=float).reshape((-1,3))
             residual_com = np.array(data['residual'],dtype=float).reshape((-1,3))
+
             is_cls = data['is_cls']
             rotation_point_com = np.array(data['g_truth_point'],dtype=float).reshape((-1,3))
 
@@ -172,11 +174,20 @@ class Mobility_Dataset(Dataset):
             g_truth_axis = np.zeros(shape=(3,3))
             residual = np.zeros(shape=(3,3))
             rotation_point = np.zeros(shape=(3,3))
+            # print('in the data loader')
+            # print(f'{orientation_label=}')
+            # print(f'{g_truth_axis_com=}')
+            # print(f'{residual_com=}')
 
             for i,label in enumerate(orientation_label):
                 g_truth_axis[label] = g_truth_axis_com[i]
                 residual[label] = residual_com[i]
                 rotation_point[label] = rotation_point_com[i]
+            
+            # print(f'{g_truth_axis=}')
+            # print(f'{residual=}')
+            # print("done witht the data loader")
+
 
 
             
@@ -192,7 +203,8 @@ class Mobility_Dataset(Dataset):
                 rotation_point = rotation_point,
                 is_cls=is_cls,
                 paths=path,
-                movable_id=int(data['movable_id'])
+                movable_id=int(data['movable_id']),
+                part_index = data["part_index"]
             )
             all_part_dicts.append(self.apply_transform(data_dict,keys= list(data_dict.keys())))
 

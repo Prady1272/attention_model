@@ -1,8 +1,10 @@
 
-for category in "Display" "Laptop" "Knife" "Clock"  "Scissors" "Door" "Pen" "Pliers" "Oven" "Cart" "USB" ; do
-  python train.py --model "transformer" --epochs 50 --category "$category" > "temp/$category.txt"
-done
 
+for split_index in 0 1 2; do
+    for category_index in 8; do 
+        python -u train.py  --epochs 2 --dropout 0.1 --use_multi_loss  --split_index $split_index --category_index $category_index --num_layers 6 --use_seed > "$category_index"_"$split_index".txt
+    done
+done
 # currently working
 # "Bottle" "Refrigerator" "Display" "Laptop" "Knife" "Clock"  "Scissors" "Door" "Pen" "Pliers" "Oven" "Cart" "USB"
 

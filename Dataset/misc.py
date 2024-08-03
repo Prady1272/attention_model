@@ -38,6 +38,12 @@ def custom_collate_fn(batch_list):
     
     if 'rotation_point' in keys:
         batch_dict['rotation_point'] = torch.cat([d['rotation_point'] for d in batch_list],dim=0)
+
+    if 'centroid' in keys:
+        batch_dict['centroid'] = torch.cat([d['centroid'] for d in batch_list],dim=0)
+
+    if 'm' in keys:
+        batch_dict['m'] = torch.cat([d['m'] for d in batch_list],dim=0)
     
     if 'movable' in keys:
         batch_dict['movable'] = torch.cat([d['movable'] for d in batch_list],dim=0)
@@ -45,6 +51,8 @@ def custom_collate_fn(batch_list):
     if 'movable_id' in keys:
         batch_dict['movable_id'] = torch.cat([d['movable_id'] for d in batch_list],dim=0)
 
+    if 'part_index' in keys:
+        batch_dict['part_index'] = torch.cat([d['part_index'] for d in batch_list],dim=0)
     if 'is_cls' in keys:
         batch_dict['is_cls'] = torch.cat([d['is_cls'] for d in batch_list],dim=0)
     

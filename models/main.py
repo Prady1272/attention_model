@@ -9,6 +9,7 @@ from .transformer_encoder_layer import TransformerEncoderLayerCustom
 # import torch_scatter
 from .DGCNN import DGCNN_cls
 import numpy as np
+from functools import partial
 
 
 
@@ -39,24 +40,23 @@ class MultiTaskLoss(torch.nn.Module):
 
 
 class MLP(nn.Module):
-    def __init__(self, input_size, channels, act_layer=nn.Tanh,last_layer_act=True,drop_prob=0.1):
+    def __init__(self, input_size, channels, act_layer=nn.LeakyReLU,last_layer_act=True,dropout=0.1,negative_slope=0.2):
         super(MLP,self).__init__()
         self.layers = nn.ModuleList()
         for size in channels:
             self.layers.append(nn.Linear(input_size, size))
-            self.layers.append(nn.LayerNorm(size))
-            self.layers.append(act_layer())
-            self.layers.append(nn.Dropout(p=drop_prob))
+            self.layers.append(act_layer(negative_slope=0.2)) # here it is a function
+            self.layers.append(nn.Dropout(p=dropout))
             input_size = size  
             
         if not last_layer_act:
-            self.layers = self.layers[:-3]
+            self.layers = self.layers[:-2]
         self.initialize()        
 
     def initialize(self):
         for layer in self.layers:
             if isinstance(layer,nn.Linear):
-                nn.init.xavier_normal_(layer.weight)
+                nn.init.kaiming_normal_(layer.weight)
 
     def forward(self, input_data):
 
@@ -65,133 +65,6 @@ class MLP(nn.Module):
             input_data = layer(input_data)
         return input_data,prev_data
 
-# takes 2 tensor
-class Encode_Obb(nn.Module):
-    def __init__(self, input_size, channels, ):
-        super(Encode_Obb,self).__init__()
-        self.pp =  MLP(input_size=3,channels=channels)
-
-    def forward(self, corners):
-        corners_features = self.pp(corners)
-        return torch.max(corners_features,dim=-2).values
-
-
-
-class Predictor(nn.Module):
-    def __init__(
-        self,
-        device,
-        features_reduce='max',
-        grid_size=0.01,
-        backbone_out_channels=(32, 64, 128, 256, 512),
-        max_seq_len = 50,
-        num_heads = 32,
-        num_layers = 1,
-        cls_token = 'cls',
-        enable_flash=True,
-
-    ):
-        super(Predictor,self).__init__()
-        self.device = device
-        self.features_reduce = features_reduce
-        self.grid_size = grid_size
-        self.max_seq_len = max_seq_len
-        self.cls_token = cls_token
-        self.input_self_attention_channel = backbone_out_channels[-1]
-
-        #self.backbone = PointTransformerV3(enc_channels=backbone_out_channels,enable_flash = enable_flash)
-        self.backbone = DGCNN_cls(512)
-        self.encode_obb  = Encode_Obb(input_size=3,channels=[256,512,512])
-        #self.transformer =  Transformer(source_max_seq_len=max_sequence_length,embedding_dim=backbone_out_channels[-1],num_heads=num_heads,num_layers=num_layers)
-        self.main_mlp = MLP(input_size=2*backbone_out_channels[-1],
-                            channels=[int(3*backbone_out_channels[-1]),1024])
-        
-        self.motion_type_mlp = MLP(input_size=1024,
-                            channels=[2048,256,128,4],
-                            last_layer_act=False)
-        
-        self.orientation_type_mlp = MLP(input_size=1024,
-                            channels=[2048,128,3],
-                            last_layer_act=False)
-        
-        self.residual_mlp = MLP(input_size=1024,
-                            channels=[2048,128,3*3],
-                            last_layer_act=False)
-        
-        self.rotation_point_mlp = MLP(input_size=1024,
-                            channels=[2048,128,3],
-                            last_layer_act=False)
-        
-
-
-        
-
-
-    def forward(self, batch_dict):
-        
-        batch_size = batch_dict['part_coord'].shape[0]
-        pc_size = batch_dict['part_coord'].shape[1]
-        
-
-        # using ptv3 impt do not delete
-        # part_offsets = torch.tensor([pc_size*(i+1) for i in range(batch_size)],dtype=torch.int)
-        # shape_offsets = torch.tensor([pc_size*(i+1) for i in range(batch_size)],dtype=torch.int)
-        # part_coord, shape_coord = batch_dict['part_coord'].reshape(-1,3), batch_dict['shape_coord'].reshape(-1,3)
-        # part_input = dict(  coord= part_coord.to(self.device),
-        #                     feat= part_coord.to(self.device),
-        #                     offset= part_offsets.to(self.device),
-        #                     grid_size=self.grid_size)
-        # shape_input = dict(  coord= shape_coord.to(self.device),
-        #                     feat= shape_coord.to(self.device),
-        #                     offset= shape_offsets.to(self.device),
-        #                     grid_size=self.grid_size)
-        # part_out = self.backbone(part_input)
-        # shape_out = self.backbone(shape_input)
-        # features = part_out.feat
-        # offsets = part_out.offset
-        # offsets = nn.functional.pad(offsets,(1,0))
-        # part_features = torch_scatter.segment_csr(src=features,indptr=offsets,reduce=self.features_reduce)
-        # features = shape_out.feat
-        # offsets = shape_out.offset
-        # offsets = nn.functional.pad(offsets,(1,0))
-        # shape_features = torch_scatter.segment_csr(src=features,indptr=offsets,reduce=self.features_reduce)
-
-        #using dgcnn
-        part_coord = batch_dict['part_coord']
-        part_coord = part_coord.view(part_coord.shape[0],3,-1).to(self.device)
-        shape_coord = batch_dict['shape_coord']
-        shape_coord = shape_coord.view(shape_coord.shape[0],3,-1).to(self.device)
-        part_features,shape_features = self.backbone(part_coord),self.backbone(shape_coord)
-
-        
-
-
-        # obb_corners = batch_dict['obb_corners']
-        # obb_features = self.encode_obb(obb_corners.to(self.device))
-
-        comibined_features = torch.cat([part_features,shape_features],dim=1)
-        comibined_features = self.main_mlp(comibined_features)
-        
-        predicted_motion_type = self.motion_type_mlp(comibined_features)
-        predicted_orientation_label = self.orientation_type_mlp(comibined_features)
-        predicted_residual = self.residual_mlp(comibined_features).reshape(-1,3,3)
-        predicted_rotation_point = self.rotation_point_mlp(comibined_features)
-
-        output = dict(
-            predicted_motion_type=predicted_motion_type,
-            predicted_orientation_label=predicted_orientation_label,
-            predicted_residual= predicted_residual,
-            predicted_rotation_point= predicted_rotation_point,
-            g_motion_type = batch_dict['motion_type'].to(self.device),
-            g_orientation_label = batch_dict['orientation_label'].to(self.device),
-            g_residual = batch_dict['residual'].to(self.device),
-            g_rotation_point = batch_dict['rotation_point'].to(self.device),
-            g_truth_axis = batch_dict['g_truth_axis'].to(self.device),
-            paths=batch_dict['paths']
-        )
-        return output
-
-
         
 
 
@@ -199,10 +72,11 @@ class Predictor(nn.Module):
 
 class TransformerModel(nn.Module):
 
-    def __init__(self, d_model: int, nhead: int, dim_feedforward: int, batch_first: bool, num_layers=2):
+    def __init__(self, d_model: int, nhead: int, dim_feedforward: int, batch_first: bool, num_layers=2,activation=nn.ReLU,dropout=0.1):
         super().__init__()
         self.model_type = 'Transformer'
-        encoder_layers = TransformerEncoderLayer(d_model=d_model, nhead=nhead,dim_feedforward=dim_feedforward,batch_first=batch_first)
+        print(f'{num_layers=}')
+        encoder_layers = TransformerEncoderLayer(d_model=d_model, nhead=nhead,dim_feedforward=dim_feedforward,batch_first=batch_first,activation=activation,dropout=dropout,norm_first=True)
         self.transformer_encoder = TransformerEncoder(encoder_layer=encoder_layers, num_layers=num_layers)
 
 
@@ -230,6 +104,8 @@ class Predictor_Transformer(nn.Module):
         num_layers = 2,
         dim_feedforward=2048,
         enable_flash=True,
+        negative_slope=0.2,
+        dropout = 0.1,
 
     ):
         super(Predictor_Transformer,self).__init__()
@@ -247,36 +123,38 @@ class Predictor_Transformer(nn.Module):
         self.input_self_attention_channel = backbone_out_channels[-1]
 
         # self.backbone = PointTransformerV3(enc_channels=backbone_out_channels,enable_flash = enable_flash)
-        self.backbone = DGCNN_cls(embedding_dim,encode_part=encode_part)
+        self.backbone = DGCNN_cls(embedding_dim,encode_part=encode_part,dropout=dropout,negative_slope=negative_slope)
         #self.encode_obb  = Encode_Obb(input_size=3,channels=[256,512,512])
         if encode_part:
-            self.part_encoder = TransformerEncoderLayerCustom(d_model=self.embedding_dim,nhead=nhead,dim_feedforward=dim_feedforward,batch_first=self.batch_first)
+            self.part_encoder = TransformerEncoderLayerCustom(d_model=self.embedding_dim,nhead=nhead,dim_feedforward=dim_feedforward,batch_first=self.batch_first,dropout=dropout,activation=nn.LeakyReLU(negative_slope=negative_slope))
             self.cls_token = torch.nn.Parameter(
                     torch.randn(1, 1, self.embedding_dim)
                 )  
         if encode_shape:
             self.shape_encoder =  TransformerModel(d_model=embedding_dim,nhead=nhead,
-                                                dim_feedforward=dim_feedforward,batch_first=self.batch_first,num_layers=num_layers)
+                                                dim_feedforward=dim_feedforward,batch_first=self.batch_first,num_layers=num_layers,dropout=dropout,
+                                                activation=nn.LeakyReLU(negative_slope))
   
-        
-        self.main_mlp = MLP(input_size=2*backbone_out_channels[-1],
-                            channels=[int(3*backbone_out_channels[-1]),1024])
+        self.norm1 = nn.LayerNorm(self.embedding_dim)
+        # self.main_mlp = MLP(input_size=2*backbone_out_channels[-1],
+        #                     channels=[int(3*backbone_out_channels[-1]),1024],dropout=dropout,negative_slope=negative_slope)
         
         self.motion_type_mlp = MLP(input_size=self.embedding_dim,
-                            channels=[2048,256,128,4],
-                            last_layer_act=False)
+                            channels=[400,256,4],
+                            last_layer_act=False,dropout=dropout,negative_slope=negative_slope)
+        print(self.motion_type_mlp)
         
         self.orientation_type_mlp = MLP(input_size=self.embedding_dim,
-                            channels=[2048,128,3],
-                            last_layer_act=False)
+                            channels=[400,3],
+                            last_layer_act=False,dropout=dropout,negative_slope=negative_slope)
         
         self.residual_mlp = MLP(input_size=self.embedding_dim,
-                            channels=[2048,128,3*3],
-                            last_layer_act=False)
+                            channels=[400,3*3],
+                            last_layer_act=False,dropout=dropout,negative_slope=negative_slope)
         
         self.rotation_point_mlp = MLP(input_size=self.embedding_dim,
-                            channels=[2048,128,3*3],
-                            last_layer_act=False)
+                            channels=[400,3*3],
+                            last_layer_act=False,dropout=dropout,negative_slope=negative_slope)
         
 
 
@@ -292,20 +170,24 @@ class Predictor_Transformer(nn.Module):
 
         # it splits according to the indices and the rest are one whatever are left
         if self.encode_part:
-            part_features = self.part_encoder(query=self.cls_token.expand(point_features.shape[0],-1,-1),
+            part_features,attn_output_weights = self.part_encoder(query=self.cls_token.expand(point_features.shape[0],-1,-1),
                                               key=point_features,
                                               value=point_features)
             part_features = part_features.squeeze(1)
 
         else:
             part_features = point_features
+            attn_output_weights = None
 
         part_features = torch.tensor_split(part_features,batch_dict['split_indices'][:-1])
         padded_part_features = pad_sequence(part_features,batch_first=self.batch_first,padding_value=0)
         encoder_mask = ~ (padded_part_features!=0).any(dim=-1)
+
         #TODO have to debug this
         if self.encode_shape:
             transformed_features = self.shape_encoder(src=padded_part_features,src_key_padding_mask=encoder_mask)
+            transformed_features = self.norm1(transformed_features)
+
         else:
             transformed_features = padded_part_features
         
@@ -326,6 +208,9 @@ class Predictor_Transformer(nn.Module):
         g_truth_axis = batch_dict['g_truth_axis'][ground_truth_mask].to(self.device)
         movable_ids = batch_dict['movable_id'][ground_truth_mask].to(self.device)
         movable = batch_dict['movable'][ground_truth_mask].to(self.device)
+        centroid = batch_dict['centroid'][ground_truth_mask].to(self.device)
+        m = batch_dict['m'][ground_truth_mask].to(self.device)
+        part_index = batch_dict['part_index'][ground_truth_mask].to(self.device)
         
         
         # comibined_features = torch.cat([part_features,transformed_features],dim=1)
@@ -351,9 +236,12 @@ class Predictor_Transformer(nn.Module):
             g_rotation_point = g_rotation_point,
             g_truth_axis =  g_truth_axis,
             paths=batch_dict['paths'],
-            num_parts = batch_dict['num_parts']
+            num_parts = batch_dict['num_parts'],
+            centroid=centroid,
+            m=m,
+            part_index = part_index
         )
-        return output
+        return output,attn_output_weights
         
         
        
@@ -376,6 +264,133 @@ class Predictor_Transformer(nn.Module):
 
 
 
+
+
+# # takes 2 tensor
+# class Encode_Obb(nn.Module):
+#     def __init__(self, input_size, channels, ):
+#         super(Encode_Obb,self).__init__()
+#         self.pp =  MLP(input_size=3,channels=channels)
+
+#     def forward(self, corners):
+#         corners_features = self.pp(corners)
+#         return torch.max(corners_features,dim=-2).values
+
+
+
+# class Predictor(nn.Module):
+#     def __init__(
+#         self,
+#         device,
+#         features_reduce='max',
+#         grid_size=0.01,
+#         backbone_out_channels=(32, 64, 128, 256, 512),
+#         max_seq_len = 50,
+#         num_heads = 32,
+#         num_layers = 1,
+#         cls_token = 'cls',
+#         enable_flash=True,
+
+#     ):
+#         super(Predictor,self).__init__()
+#         self.device = device
+#         self.features_reduce = features_reduce
+#         self.grid_size = grid_size
+#         self.max_seq_len = max_seq_len
+#         self.cls_token = cls_token
+#         self.input_self_attention_channel = backbone_out_channels[-1]
+
+#         #self.backbone = PointTransformerV3(enc_channels=backbone_out_channels,enable_flash = enable_flash)
+#         self.backbone = DGCNN_cls(512)
+#         self.encode_obb  = Encode_Obb(input_size=3,channels=[256,512,512])
+#         #self.transformer =  Transformer(source_max_seq_len=max_sequence_length,embedding_dim=backbone_out_channels[-1],num_heads=num_heads,num_layers=num_layers)
+#         self.main_mlp = MLP(input_size=2*backbone_out_channels[-1],
+#                             channels=[int(3*backbone_out_channels[-1]),1024])
+        
+#         self.motion_type_mlp = MLP(input_size=1024,
+#                             channels=[2048,256,128,4],
+#                             last_layer_act=False)
+        
+#         self.orientation_type_mlp = MLP(input_size=1024,
+#                             channels=[2048,128,3],
+#                             last_layer_act=False)
+        
+#         self.residual_mlp = MLP(input_size=1024,
+#                             channels=[2048,128,3*3],
+#                             last_layer_act=False)
+        
+#         self.rotation_point_mlp = MLP(input_size=1024,
+#                             channels=[2048,128,3],
+#                             last_layer_act=False)
+        
+
+
+        
+
+
+#     def forward(self, batch_dict):
+        
+#         batch_size = batch_dict['part_coord'].shape[0]
+#         pc_size = batch_dict['part_coord'].shape[1]
+        
+
+#         # using ptv3 impt do not delete
+#         # part_offsets = torch.tensor([pc_size*(i+1) for i in range(batch_size)],dtype=torch.int)
+#         # shape_offsets = torch.tensor([pc_size*(i+1) for i in range(batch_size)],dtype=torch.int)
+#         # part_coord, shape_coord = batch_dict['part_coord'].reshape(-1,3), batch_dict['shape_coord'].reshape(-1,3)
+#         # part_input = dict(  coord= part_coord.to(self.device),
+#         #                     feat= part_coord.to(self.device),
+#         #                     offset= part_offsets.to(self.device),
+#         #                     grid_size=self.grid_size)
+#         # shape_input = dict(  coord= shape_coord.to(self.device),
+#         #                     feat= shape_coord.to(self.device),
+#         #                     offset= shape_offsets.to(self.device),
+#         #                     grid_size=self.grid_size)
+#         # part_out = self.backbone(part_input)
+#         # shape_out = self.backbone(shape_input)
+#         # features = part_out.feat
+#         # offsets = part_out.offset
+#         # offsets = nn.functional.pad(offsets,(1,0))
+#         # part_features = torch_scatter.segment_csr(src=features,indptr=offsets,reduce=self.features_reduce)
+#         # features = shape_out.feat
+#         # offsets = shape_out.offset
+#         # offsets = nn.functional.pad(offsets,(1,0))
+#         # shape_features = torch_scatter.segment_csr(src=features,indptr=offsets,reduce=self.features_reduce)
+
+#         #using dgcnn
+#         part_coord = batch_dict['part_coord']
+#         part_coord = part_coord.view(part_coord.shape[0],3,-1).to(self.device)
+#         shape_coord = batch_dict['shape_coord']
+#         shape_coord = shape_coord.view(shape_coord.shape[0],3,-1).to(self.device)
+#         part_features,shape_features = self.backbone(part_coord),self.backbone(shape_coord)
+
+        
+
+
+#         # obb_corners = batch_dict['obb_corners']
+#         # obb_features = self.encode_obb(obb_corners.to(self.device))
+
+#         comibined_features = torch.cat([part_features,shape_features],dim=1)
+#         comibined_features = self.main_mlp(comibined_features)
+        
+#         predicted_motion_type = self.motion_type_mlp(comibined_features)
+#         predicted_orientation_label = self.orientation_type_mlp(comibined_features)
+#         predicted_residual = self.residual_mlp(comibined_features).reshape(-1,3,3)
+#         predicted_rotation_point = self.rotation_point_mlp(comibined_features)
+
+#         output = dict(
+#             predicted_motion_type=predicted_motion_type,
+#             predicted_orientation_label=predicted_orientation_label,
+#             predicted_residual= predicted_residual,
+#             predicted_rotation_point= predicted_rotation_point,
+#             g_motion_type = batch_dict['motion_type'].to(self.device),
+#             g_orientation_label = batch_dict['orientation_label'].to(self.device),
+#             g_residual = batch_dict['residual'].to(self.device),
+#             g_rotation_point = batch_dict['rotation_point'].to(self.device),
+#             g_truth_axis = batch_dict['g_truth_axis'].to(self.device),
+#             paths=batch_dict['paths']
+#         )
+#         return output
 
 
 
