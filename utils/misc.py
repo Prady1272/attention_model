@@ -370,7 +370,7 @@ def vis_helper(args,details):
     all_part_index,part_index_mov,part_index_rot,centroid_mov,m_mov,
     num_parts,paths,
     orientation_error,point_error) = details
-    suffix = f"{args.split_index}{'_ep' if args.encode_part else ''}{'_es' if args.encode_shape else ''}"
+    suffix = f"{args.split_index}{'_ep' if args.encode_part else ''}{'_es'+str(args.num_layers) if args.encode_shape else ''}"
     all_input_data = []
     num_mov  = []
     num_rot = []

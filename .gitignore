@@ -3,11 +3,8 @@ legacy/*
 __pycache__
 /home/pradyumngoya/working_dr/Partnet/Unsupervised/SWMP/NetworkDataExtract/OBBcalculation/Input/*
 /home/pradyumngoya/working_dr/Partnet/Unsupervised/SWMP/NetworkDataExtract/OBBcalculation/Output/*
-train_output/*
-train_output_ep_es/*
-train_output_ep/*
-train_output_es/*
 job_train_all
 training_output_debug/*
+train_output*/*
 wandb/*
 *.txt

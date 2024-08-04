@@ -237,7 +237,7 @@ def main(args):
 
     print(args)
     args.base_output += "_ep" if args.encode_part else "" 
-    args.base_output += "_es" if args.encode_shape else ""
+    args.base_output += '_es'+str(args.num_layers) if args.encode_shape else ""
 
     # taking care of model dependent variables
     if args.pretraining:
