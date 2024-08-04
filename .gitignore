@@ -4,6 +4,7 @@ __pycache__
 /home/pradyumngoya/working_dr/Partnet/Unsupervised/SWMP/NetworkDataExtract/OBBcalculation/Input/*
 /home/pradyumngoya/working_dr/Partnet/Unsupervised/SWMP/NetworkDataExtract/OBBcalculation/Output/*
 job_train_all
+train.sh
 training_output_debug/*
 train_output*/*
 wandb/*

@@ -1,8 +1,8 @@
 
 
 for split_index in 0 1 2; do
-    for category_index in 8; do 
-        python -u train.py  --epochs 2 --dropout 0.1 --use_multi_loss  --split_index $split_index --category_index $category_index --num_layers 6 --use_seed > "$category_index"_"$split_index".txt
+    for category_index in 0; do 
+        python -u train.py   --use_multi_loss  --split_index $split_index --category_index $category_index --num_layers 6 --use_seed > "$category_index"_"$split_index".txt
     done
 done
 # currently working
