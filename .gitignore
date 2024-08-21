@@ -9,3 +9,4 @@ training_output_debug/*
 train_output*/*
 wandb/*
 *.txt
+legacy_text/*

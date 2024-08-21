@@ -151,6 +151,10 @@ class Mobility_Dataset(Dataset):
         cls_dict = input_data.pop(cls_index)
         input_data = random.sample(input_data,min(len(input_data),self.max_seq_len))
         input_data.insert(0,cls_dict)
+        if len(input_data)<=1:
+            # print(f'{path=}')
+            # print("this shape had only 1 part")
+            return self.prepare_data_transformer(random.randint(0,len(self)-1))
 
        
 

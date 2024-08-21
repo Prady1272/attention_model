@@ -22,41 +22,35 @@ def generate_pretraining_paths(args):
 
 
 def generate_fine_tuning_paths(args):
-    base_output = os.path.join(args.base_output,args.category,'Pretraining')
-    if os.path.exists(base_output) and len(os.listdir(base_output)):
+    pretrain_exists = False
+    pretrain_checkpoint = None
+    pretrain_base_checkpoint = None
+    if args.use_pretraining:
+        base_output = os.path.join(args.base_output,args.category,'Pretraining')
+        assert os.path.exists(base_output) and len(os.listdir(base_output))
+        print(f'using the pretrain path for starting new fine tuning')
+        pretrain_exists = True
         time_stamps = os.listdir(base_output)
         time_stamps.sort(reverse=True)
         latest_time_stamp = time_stamps[0]
+        pretrain_checkpoint = os.path.join(base_output,latest_time_stamp,'checkpoint')
+
+    if args.use_pretraining:
+        base_output = os.path.join(args.base_output,args.category,'fine_tuning',latest_time_stamp,str(args.split_index))
     else:
-        if args.split_index == 0:
-            print("pretraining is empty and the training index is 0 or fine tuning does not exist creating a new time stamp")
-            local_time = time.localtime()
-            time_string = time.strftime("%Y-%m-%d %H:%M", local_time)
-            time_string = time_string.replace(" ", "_")
-            time_string = time_string.replace(":", "_")
-            latest_time_stamp = time_string
-        else:
-            print("pretraining is empty but the training index is not 0 using a prev time stamp")
-            base_output = os.path.join(args.base_output,args.category,'fine_tuning')
-            time_stamps = os.listdir(base_output)
-            time_stamps.sort(reverse=True)
-            latest_time_stamp = time_stamps[0]
-            split_indices = os.listdir(os.path.join(args.base_output,args.category,'fine_tuning',latest_time_stamp))
-            split_indices.sort(reverse=True)
-            if str(args.split_index) in split_indices:
-                print("already done continue now")
-            assert int(split_indices[0])< args.split_index
-            assert int(split_indices[0]) == args.split_index-1
+        local_time = time.localtime()
+        time_string = time.strftime("%Y-%m-%d %H:%M", local_time)
+        time_string = time_string.replace(" ", "_")
+        time_string = time_string.replace(":", "_")
+        print('making a new path. so no pretrained for fine tuning')
+        base_output = os.path.join(args.base_output,args.category,'fine_tuning',time_string,str(args.split_index))
 
-
-
-    base_output = os.path.join(args.base_output,args.category,'fine_tuning',latest_time_stamp,str(args.split_index))
     checkpoint = os.path.join(base_output,args.checkpoint)
     runs = os.path.join(base_output,args.runs)
     csv = os.path.join(base_output,f'metrics.csv')
     for path in [checkpoint,runs]:
         os.makedirs(path,exist_ok=True)
-    return checkpoint,runs,csv
+    return pretrain_checkpoint,checkpoint,runs,csv
 
 
 
@@ -84,8 +78,13 @@ def retrive_checkpoint_from_directory(args):
     return checkpoint,runs,logs
 
 
-def state_dict(checkpoint):
-    all_states = torch.load(os.path.join(checkpoint,'model_best.pth.tar'))
+def state_dict(args,checkpoint,latest):
+    if latest:
+        print(f'Returning the LATEST pth.tar from {checkpoint=}')
+        all_states = torch.load(os.path.join(checkpoint,"checkpoint.pth.tar"))
+    else:
+        print(f'Returning the BEST model from {checkpoint=}')
+        all_states = torch.load(os.path.join(checkpoint,'model_best.pth.tar'))
     return all_states['state_dict'], all_states['optimizer'],all_states['epoch'],all_states['best_loss'] 
 
 
@@ -109,9 +108,11 @@ def restore_original_output(original_stdout, original_stderr, log_file):
 
 
 def loss_funs(args,motion_weights,orientation_type_weights):
+    print(f'{motion_weights=}')
+    print(f'{orientation_type_weights=}')
     motion_lfn = torch.nn.CrossEntropyLoss(weight=motion_weights,reduction=args.loss_reduction)
     #orientation_lfn = torch.nn.CrossEntropyLoss(weight=orientation_type_weights)
-    orientation_lfn = torch.nn.BCEWithLogitsLoss(reduction=args.loss_reduction)
+    orientation_lfn = torch.nn.BCEWithLogitsLoss(reduction=args.loss_reduction,pos_weight=orientation_type_weights)
     residual_lfn = torch.nn.L1Loss(reduction=args.loss_reduction)
     point_lfn = torch.nn.L1Loss(reduction=args.loss_reduction)
     #point_lfn = point_loss_function
@@ -120,16 +121,40 @@ def loss_funs(args,motion_weights,orientation_type_weights):
 
 @torch.no_grad()
 def multilabel_accuracy(y_pred, y_true, threshold=0.5):
+    # print(f'{y_true=}')
     y_pred = torch.argmax(y_pred,dim=1)
     y_true = torch.argmax(y_true,dim=1)
     correct_predictions = (y_pred == y_true).float()
-    return correct_predictions,y_pred
+    
+    # print(f'{y_pred=}')
+    # print(f'{correct_predictions=}')
+    rotationary_index = y_true==0
+    # print(f'{rotationary_index=}')
+    correct_rotationary = correct_predictions[rotationary_index]
+    # print(f'{correct_rotationary=}')
+
+    screw_index = y_true==1 
+    # print(f'{screw_index=}')
+    correct_screw = correct_predictions[screw_index]
+    # print(f'{correct_screw=}')
+
+    trans_index = y_true==2
+    # print(f'{trans_index=}')
+    correct_trans = correct_predictions[trans_index]
+    # print(f'{correct_trans=}')
+
+    fixed_index = y_true==3
+    # print(f'{fixed_index=}')
+    correct_fixed = correct_predictions[fixed_index]
+    # print(f'{correct_fixed=}')
+
+    return (correct_predictions,correct_rotationary,correct_screw,correct_trans,correct_fixed),y_pred
 
 
 
 
 
-def compute_relevant(args,output):
+def compute_relevant(args,output,pretraining):
     discrete_axis = fibonacci_sphere()
     discrete_axis = discrete_axis.to(output['predicted_motion_type'].device)
     all_predicted_motion_type = output['predicted_motion_type']
@@ -146,18 +171,23 @@ def compute_relevant(args,output):
     all_part_index = output['part_index']
 
     # print("starting new")
+    # print(f'{all_g_motion_type=}')
+    # print(f'{all_predicted_motion_type=}')
     # print(f'{all_g_axis=}')
-    # print(f'{all_predicted_orientation_label=}')
     # print(f'{all_g_orientation_label=}')
+    # print(f'{all_predicted_orientation_label=}')
     # print(f'{all_g_residual=}')
     # print(f'{all_predicted_residual=}')
+    # print(f'{all_g_rotation_point=}')
+    # print(f'{all_predicted_rotation_point=}')
 
     
     mask_mov = all_g_motion_type[:, -1] != 1
-    #print(f'{mask_mov=}')
+    # print(f'{mask_mov=}')
     mask_rot = (all_g_motion_type[:, 0] == 1) | (all_g_motion_type[:, 1] ==1)
+    # print(f'{mask_rot=}')
 
-    if not args.pretraining:
+    if not pretraining:
         movable_ids_orientation = (output['movable_ids'][mask_mov]>=1000).all()
         movabale_ids_point = (output['movable_ids'][mask_rot]>=1000).all()
         assert movable_ids_orientation.item() and movabale_ids_point.item() ## all the movabale ids from the orinetation mask and point belong to a movable part
@@ -171,17 +201,17 @@ def compute_relevant(args,output):
     # this takes of getting the right parts
     
     predicted_orientation_label_mov = all_predicted_orientation_label[mask_mov]
-    #print(f'{predicted_orientation_label_mov=}')
+    # print(f'{predicted_orientation_label_mov=}')
     g_orientation_label_mov = all_g_orientation_label[mask_mov]
-    #print(f'{g_orientation_label_mov=}')
+    # print(f'{g_orientation_label_mov=}')
     predicted_residual_mov = all_predicted_residual[mask_mov]
-    #print(f'{predicted_residual_mov=}')
+    # print(f'{predicted_residual_mov=}')
     g_residual_mov = all_g_residual[mask_mov]
+    # print(f'{g_residual_mov=}')
     
-
-    #print(f'{g_residual_mov=}')
+ 
     g_axis_mov = all_g_axis[mask_mov]
-    #print(f'{g_axis_mov=}')
+    # print(f'{g_axis_mov=}')
 
     centroid_mov = all_centroid[mask_mov]
 
@@ -190,17 +220,24 @@ def compute_relevant(args,output):
     
 
     predicted_rotation_point_rot = all_predicted_rotation_point[mask_rot]
+    # print(f'{predicted_rotation_point_rot=}')
     g_rotation_point_rot = all_g_rotation_point[mask_rot]
+    # print(f'{g_rotation_point_rot=}')
 
     predicted_orientation_label_rot = all_predicted_orientation_label[mask_rot]
+    # print(f'{predicted_orientation_label_rot=}')
     g_orientation_label_rot = all_g_orientation_label[mask_rot] # only parts that have that the rotation point
+    # print(f'{g_orientation_label_rot=}')
     predicted_residual_rot = all_predicted_residual[mask_rot]
+    # print(f'{predicted_residual_rot=}')
     g_residual_rot = all_g_residual[mask_rot]
+    # print(f'{g_residual_rot=}')
     g_axis_rot = all_g_axis[mask_rot]
+    # print(f'{g_axis_rot=}')
     part_index_rot = all_part_index[mask_rot]
     
     # getting the predicted axis mov and the ground truth axis mov for the movable part
-    if not args.pretraining:
+    if not pretraining:
         max_predicted_label_mov = torch.argmax(predicted_orientation_label_mov,dim=1)
         #print(f"{max_predicted_label_mov=}")
         predicted_discrete_axis_mov = discrete_axis[max_predicted_label_mov]
@@ -211,7 +248,7 @@ def compute_relevant(args,output):
         #print(f'{predicted_axis_mov=}')
        
 
-    if not args.pretraining:
+    if not pretraining:
         max_predicted_label_rot = torch.argmax(predicted_orientation_label_rot,dim=1)
         predicted_discrete_axis_rot = discrete_axis[max_predicted_label_rot]
         max_predicted_residual_rot = predicted_residual_rot[torch.arange(max_predicted_label_rot.shape[0]),max_predicted_label_rot]
@@ -240,9 +277,13 @@ def compute_relevant(args,output):
     
     masking_orientations_rot = g_orientation_label_rot.reshape(-1)
     masking_orientations_rot = masking_orientations_rot==1
+    # print(f'{masking_orientations_rot=}')
     predicted_rotation_point_rot = predicted_rotation_point_rot.reshape(-1,3)[masking_orientations_rot]
+    # print(f'{predicted_rotation_point_rot=}')
     g_rotation_point_rot = g_rotation_point_rot.reshape(-1,3)[masking_orientations_rot]
+    # print(f'{g_rotation_point_rot=}')
     g_axis_rot = g_axis_rot.reshape(-1,3)[masking_orientations_rot]
+    # print(f'{g_axis_rot=}')
   
 
     
@@ -258,8 +299,8 @@ def compute_relevant(args,output):
                 'predicted_rotation_point_rot':predicted_rotation_point_rot,
                 'g_rotation_point_rot':g_rotation_point_rot,
                 'g_axis_mov':g_axis_mov,
-                'predicted_axis_mov':predicted_axis_mov if not args.pretraining else None,
-                'max_predicted_rotation_point_rot': max_predicted_rotation_point_rot if not args.pretraining else None,
+                'predicted_axis_mov':predicted_axis_mov if not pretraining else None,
+                'max_predicted_rotation_point_rot': max_predicted_rotation_point_rot if not pretraining else None,
                 'g_axis_rot': g_axis_rot,
                 "centroid_mov": centroid_mov,
                 "m_mov": m_mov,
@@ -275,8 +316,8 @@ def compute_relevant(args,output):
 
 
 
-def compute_loss(args,output,motion_lfn,orientation_lfn,residual_lfn,point_lfn):
-    results = compute_relevant(args,output)
+def compute_loss(args,output,motion_lfn,orientation_lfn,residual_lfn,point_lfn,pretraining):
+    results = compute_relevant(args,output,pretraining=pretraining)
     all_predicted_motion_type = results['all_predicted_motion_type']
     all_g_motion_type = results['all_g_motion_type']
     predicted_orientation_label_mov = results['predicted_orientation_label_mov']
@@ -317,6 +358,16 @@ def compute_loss(args,output,motion_lfn,orientation_lfn,residual_lfn,point_lfn):
     # this remains same during
     # print("starting here")
     type_loss = motion_lfn(all_predicted_motion_type,all_g_motion_type)
+    # if (torch.isnan(torch.tensor([type_loss])).any()):
+    #     print(f'{output=}')
+    #     print(f'{type_loss=}')
+    #     print(f'{all_predicted_motion_type=}')
+    #     print(f'{all_g_motion_type=}')
+    accuracy,all_max_motion_predictions = multilabel_accuracy(y_pred=all_predicted_motion_type,y_true=all_g_motion_type)
+
+
+
+
     
     if (g_orientation_label_mov.shape[0]!=0):
         # print(f"{predicted_orientation_label_mov=}")
@@ -328,14 +379,14 @@ def compute_loss(args,output,motion_lfn,orientation_lfn,residual_lfn,point_lfn):
         residual_loss = residual_lfn(predicted_residual_mov,g_residual_mov)
         #residual_loss = residual_loss + 0.1*torch.sum(predicted_residual_mov**2)
         # print(f'{residual_loss=}')
-        if not args.pretraining:
+        if not pretraining:
             # print(f"{predicted_axis_mov=}")
             # print(f"{g_axis_mov=}")
             orientation_error = calculate_axis_error(predicted_axis_mov,g_axis_mov)
-            accuracy,all_max_motion_predictions = multilabel_accuracy(y_pred=all_predicted_motion_type,y_true=all_g_motion_type)
+            # accuracy,all_max_motion_predictions = multilabel_accuracy(y_pred=all_predicted_motion_type,y_true=all_g_motion_type)
             # print(f'{orientation_error=}')
         else:
-            accuracy,all_max_motion_predictions = torch.tensor([0],dtype=torch.float,device=all_predicted_motion_type.device),None
+            # accuracy,all_max_motion_predictions = torch.tensor([0],dtype=torch.float,device=all_predicted_motion_type.device),None
             orientation_error = torch.tensor([0],dtype=torch.float,device=all_predicted_motion_type.device)
 
     else:
@@ -344,11 +395,12 @@ def compute_loss(args,output,motion_lfn,orientation_lfn,residual_lfn,point_lfn):
         orientation_error = torch.tensor([0],dtype=torch.float,device=all_predicted_motion_type.device)
 
 
+
   
     if (g_rotation_point_rot.shape[0]!=0):
         #point_loss  = point_lfn(predicted_rotation_point_rot,g_rotation_point_rot,g_axis_rot)
         point_loss  = point_lfn(predicted_rotation_point_rot,g_rotation_point_rot)
-        if not args.pretraining:
+        if not pretraining:
             point_error = calculate_point_error(max_predicted_rotation_point_rot,g_rotation_point_rot,g_axis_rot)
         else:
             point_error = torch.tensor([0],dtype=torch.float,device=all_predicted_motion_type.device)
@@ -358,10 +410,23 @@ def compute_loss(args,output,motion_lfn,orientation_lfn,residual_lfn,point_lfn):
         point_loss = torch.tensor(0,dtype=torch.float,device=all_predicted_motion_type.device)
         point_error = torch.tensor([0],dtype=torch.float,device=all_predicted_motion_type.device)
 
-
-    return (type_loss, orientation_loss, residual_loss, point_loss),(accuracy,orientation_error,point_error),(predicted_axis_mov,predicted_rotation_point_rot, all_max_motion_predictions,predicted_orientation_label_mov, predicted_residual_mov,
+    x,y,z = orientation_bins(predicted_orientation_label_mov=predicted_orientation_label_mov)
+    return (type_loss, orientation_loss, residual_loss, point_loss),(accuracy,orientation_error,point_error,(x,y,z)),(predicted_axis_mov,predicted_rotation_point_rot, all_max_motion_predictions,predicted_orientation_label_mov, predicted_residual_mov,
                                                                                                               all_part_index,part_index_mov,part_index_rot,centroid_mov,m_mov,
                                                                                                               num_parts,paths)
+
+
+
+@torch.no_grad()
+def orientation_bins(predicted_orientation_label_mov):
+    max_index = torch.argmax(predicted_orientation_label_mov,axis=1)
+    x = torch.sum((max_index==0).float())
+    y = torch.sum((max_index==1).float())
+    z = torch.sum((max_index==2).float())
+    return x,y,z
+
+
+
 
 
 @torch.no_grad()
@@ -371,6 +436,7 @@ def vis_helper(args,details):
     num_parts,paths,
     orientation_error,point_error) = details
     suffix = f"{args.split_index}{'_ep' if args.encode_part else ''}{'_es'+str(args.num_layers) if args.encode_shape else ''}"
+    print(f'{suffix=}')
     all_input_data = []
     num_mov  = []
     num_rot = []
@@ -592,8 +658,10 @@ def compute_stats_transform(args,split='train',split_index=0):
 
 
     label_bin = [0 for _ in range (3)]
+    non_label_bins = [0 for _ in range(3)]
     type_bin = [0 for _ in range(4)]
     num_parts = [0 for _ in range(250)]
+    
     #all_moving_shape_parts = [0 for _ in range(250)]
 
     for path in all_paths:
@@ -607,20 +675,24 @@ def compute_stats_transform(args,split='train',split_index=0):
                 type_bin[motion_type]+=1
                 if motion_type != 3:
                     labels = part_dict['label']
-                    for label in labels:
-                        label_bin[label]+=1
+                    all_labels = [0,1,2]
+                    for label in all_labels:
+                        if label in labels:
+                            label_bin[label]+=1
+                        else:
+                            non_label_bins[label]+=1
         del part_list
 
     
     
-    return type_bin,label_bin,num_parts
+    return type_bin,label_bin,non_label_bins,num_parts
 
 
 def print_le(writer,epoch,optimizer,losses,errors,split,best_epoch=-1):
     loss,type_loss,orientation_loss,residual_loss,point_loss = losses
-    type_accuracy,orientation_error, point_error = errors
+    type_accuracy,type_rotation,type_screw,type_trans,type_fixed,x_bins,y_bins,z_bins, orientation_error, point_error = errors
 
-    print(f"Epoch {epoch:d}. {split}_loss: {loss:.8f}. type_loss: {type_loss:.8f}. orientation_loss: {orientation_loss:.8f}. residual_loss: {residual_loss:.8f}. point_loss: {point_loss:.8f}. accuracy {type_accuracy:.8f}. orientation_error {orientation_error}. point_error {point_error}. Current lr : {optimizer.param_groups[0]['lr']:.8f}. best_epoch: {best_epoch}")
+    print(f"Epoch {epoch:d}. {split}_loss: {loss:.8f}. type_loss: {type_loss:.8f}. orientation_loss: {orientation_loss:.8f}. residual_loss: {residual_loss:.8f}. point_loss: {point_loss:.8f}. accuracy {type_accuracy:.8f}. rotation_accuracy {type_rotation:.8f}. screw_accuracy {type_screw:.8f}.trans_accuracy {type_trans:.8f}. fixed_accuracy {type_fixed:.8f}. orientation_error {orientation_error}. point_error {point_error}. x_bins {x_bins} y_bins {y_bins} z_bins {z_bins} Current lr : {optimizer.param_groups[0]['lr']:.8f}. best_epoch: {best_epoch}")
     writer.add_scalar(f"Loss/{split}", loss, epoch)
     writer.add_scalar(f"type_loss/{split}", type_loss, epoch)
     writer.add_scalar(f"orientation_loss/{split}", orientation_loss, epoch)
@@ -628,6 +700,10 @@ def print_le(writer,epoch,optimizer,losses,errors,split,best_epoch=-1):
     writer.add_scalar(f"point_loss/{split}", point_loss, epoch)
 
     writer.add_scalar(f"type_accuracy/{split}", type_accuracy, epoch)
+    writer.add_scalar(f"type_rotation/{split}", type_rotation, epoch)
+    writer.add_scalar(f"type_screw/{split}", type_screw, epoch)
+    writer.add_scalar(f"type_trans/{split}", type_trans, epoch)
+    writer.add_scalar(f"type_fixed/{split}", type_fixed, epoch)
     writer.add_scalar(f"orientation_error/{split}", orientation_error, epoch)
     writer.add_scalar(f"point_error/{split}", point_error, epoch)
 
@@ -665,6 +741,31 @@ def attn_weight_images(ouput,attn_output_weigths):
 
 
 
+def final_metrics(metrics,count):
+    loss_sum =              metrics["loss_sum"]
+    type_accuracy_sum =     metrics["type_accuracy_sum"]
+    type_rotationary_sum =  metrics["type_rotationary_sum"]
+    type_screw_sum =        metrics["type_screw_sum"]
+    type_trans_sum =        metrics["type_trans_sum"]
+    type_fixed_sum =        metrics["type_fixed_sum"]
+    x_bins =                metrics["x_bins"]
+    y_bins =                metrics["y_bins"]
+    z_bins =                metrics["z_bins"]
+    orientation_error_sum = metrics["orientation_error_sum"]
+    point_error_sum =       metrics["point_error_sum"]
+    type_loss_sum =         metrics["type_loss_sum"]
+    orientation_loss_sum =  metrics["orientation_loss_sum"]
+    residual_loss_sum =     metrics['residual_loss_sum']
+    point_loss_sum =        metrics["point_loss_sum"]
+
+    return ((loss_sum / count, type_loss_sum/count, orientation_loss_sum/count, residual_loss_sum/count,point_loss_sum/count), 
+            (sum(type_accuracy_sum)/(len(type_accuracy_sum) if len(type_accuracy_sum) >0 else 1),
+             sum(type_rotationary_sum)/(len(type_rotationary_sum) if len(type_rotationary_sum) >0 else 1),
+             sum(type_screw_sum)/(len(type_screw_sum) if len(type_screw_sum) >0 else 1),
+             sum(type_trans_sum)/(len(type_trans_sum) if len(type_trans_sum) >0 else 1),
+             sum(type_fixed_sum)/(len(type_fixed_sum) if len(type_fixed_sum) >0 else 1),
+             x_bins,y_bins,z_bins,
+             sum(orientation_error_sum)/(len(orientation_error_sum) if len(orientation_error_sum)>0 else 1),sum(point_error_sum)/(len(point_error_sum) if len(point_error_sum) >0 else 1)))
 
 
 
@@ -673,15 +774,37 @@ def attn_weight_images(ouput,attn_output_weigths):
 
 
 
+def pre_loaders(args,pretrain_dataset,preval_dataset,pretest_dataset,collate_fn):
+    pretrain_loader = torch.utils.data.DataLoader(
+                    pretrain_dataset,
+                    batch_size=args.batch_size,
+                    shuffle=True,
+                    num_workers=args.num_workers,
+                    pin_memory=True,
+                    collate_fn=collate_fn,
+                    persistent_workers=True if args.num_workers != 0 else False,
+                )
+    
+    pretest_loader = torch.utils.data.DataLoader(
+                    pretest_dataset,
+                    batch_size=args.batch_size*2,
+                    shuffle=True,
+                    num_workers=args.num_workers,
+                    pin_memory=True,
+                    collate_fn=collate_fn,
+                    persistent_workers=True if args.num_workers != 0 else False,)
+    
 
+    preval_loader = torch.utils.data.DataLoader(
+                    preval_dataset,
+                    batch_size=args.batch_size*2,
+                    shuffle=True,
+                    num_workers=args.num_workers,
+                    pin_memory=True,
+                    collate_fn=collate_fn,
+                    persistent_workers=True if args.num_workers != 0 else False,)
 
-
-
-
-
-
-
-
+    return pretrain_loader,pretest_loader,preval_loader
 
 
 

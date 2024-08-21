@@ -268,7 +268,6 @@ def normalize_according_shape(data_dict,keys):
         data_dict["shape_coord"] = data_dict["shape_coord"] / m
         data_dict["part_coord"] -= centroid
         data_dict["part_coord"] = data_dict["part_coord"] / m
-   
         data_dict["rotation_point"] -= centroid
         data_dict['rotation_point'] = data_dict['rotation_point']/m
         data_dict['centroid'] = centroid

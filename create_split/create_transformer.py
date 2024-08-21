@@ -5,8 +5,9 @@ import sys
 import torch
 import json
 import argparse
-def split_directories(dataset_path, training_data_dir, train_ratio=0.8,split_train_val=0.8,use_semi_split=True):
+def split_directories(dataset_path, training_data_dir, train_ratio=0.8,val_ratio=0.1,split_train_val=0.8,use_semi_split=True):
     assert train_ratio<=0.8
+
     shapes_data_dir = os.path.join(dataset_path,training_data_dir)
     shapes_data = os.listdir(shapes_data_dir)
     cat_shape_dict = defaultdict(list)
@@ -56,7 +57,7 @@ def split_directories(dataset_path, training_data_dir, train_ratio=0.8,split_tra
             for category in cat_shape_dict:
                 random.shuffle(cat_shape_dict[category])
                 split_test_index = int(len(cat_shape_dict[category]) * train_ratio)
-                split_val_index = int(len(cat_shape_dict[category])*(train_ratio-0.2))
+                split_val_index = int(len(cat_shape_dict[category])*(train_ratio-val_ratio))
                 print(f'{category} {split_val_index=} {split_test_index=}  {len(cat_shape_dict[category])=}')
                 train_split[category] = cat_shape_dict[category][:split_val_index]
                 train_split[category] = ["_".join([category,shape])+".pth" for shape in train_split[category] ]
@@ -111,10 +112,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process base directory and dataset path.')
     parser.add_argument('--base_dir', type=str, default='/home/pradyumngoya/working_dr', 
                         help='Base directory path')
-    parser.add_argument('--dataset_path', type=str, default='snippets/data/partnet_mobility_root', 
+    parser.add_argument('--dataset_path', type=str, default='snippets/data/partnet_root', 
                         help='Dataset path')
 
-    parser.add_argument('--training_data_dir', type=str, default='fine_transformer_mobilities', 
+    parser.add_argument('--training_data_dir', type=str, default='pretrain_transformer_mobilities', 
                         help='training_data')
 
     args = parser.parse_args()

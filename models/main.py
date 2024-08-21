@@ -145,15 +145,15 @@ class Predictor_Transformer(nn.Module):
         print(self.motion_type_mlp)
         
         self.orientation_type_mlp = MLP(input_size=self.embedding_dim,
-                            channels=[400,3],
+                            channels=[400,256,3],
                             last_layer_act=False,dropout=dropout,negative_slope=negative_slope)
         
         self.residual_mlp = MLP(input_size=self.embedding_dim,
-                            channels=[400,3*3],
+                            channels=[400,256,3*3],
                             last_layer_act=False,dropout=dropout,negative_slope=negative_slope)
         
         self.rotation_point_mlp = MLP(input_size=self.embedding_dim,
-                            channels=[400,3*3],
+                            channels=[400,256,3*3],
                             last_layer_act=False,dropout=dropout,negative_slope=negative_slope)
         
 
