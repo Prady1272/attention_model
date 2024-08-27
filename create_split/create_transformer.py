@@ -150,10 +150,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process base directory and dataset path.')
     parser.add_argument('--base_dir', type=str, default='/home/pradyumngoya/working_dr', 
                         help='Base directory path')
-    parser.add_argument('--dataset_path', type=str, default='snippets/data/partnet_root', 
+    parser.add_argument('--dataset_path', type=str, default='snippets/data/partnet_mobility_root', 
                         help='Dataset path')
 
-    parser.add_argument('--training_data_dir', type=str, default='pretrain_transformer_mobilities', 
+    parser.add_argument('--training_data_dir', type=str, default='fine_transformer_mobilities', 
                         help='training_data')
 
     args = parser.parse_args()

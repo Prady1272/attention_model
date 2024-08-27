@@ -643,7 +643,7 @@ def compute_stats(args,split='train'):
 
 def compute_stats_transform(args,split='train',split_index=None):
     print(f'stats {split_index}')
-    with open (os.path.join(args.base_dir, args.data_root,f'{split}_{int(split_index)}.json'),'r') as file:
+    with open (os.path.join(args.base_dir, args.data_root,f'{split}_{(split_index)}.json'),'r') as file:
         data = json.load(file)
     
     all_paths = []

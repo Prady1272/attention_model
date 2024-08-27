@@ -37,7 +37,7 @@ def get_args():
     # paths you may want to adjust
     parser.add_argument('--base_dir',default='/home/pradyumngoya/working_dr')
     parser.add_argument('--data_root',default='snippets/data/')
-    parser.add_argument('--split_index',type=int,default=0)
+    parser.add_argument('--split_index',type=str,default='0')
     #output paths
     parser.add_argument('--base_output',default='./train_output')
     parser.add_argument('--checkpoint',default='checkpoint')
