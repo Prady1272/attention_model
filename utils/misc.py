@@ -641,16 +641,19 @@ def compute_stats(args,split='train'):
     return type_bin,label_bin
 
 
-def compute_stats_transform(args,split='train',split_index=0):
+def compute_stats_transform(args,split='train',split_index=None):
+    print(f'stats {split_index}')
     with open (os.path.join(args.base_dir, args.data_root,f'{split}_{int(split_index)}.json'),'r') as file:
         data = json.load(file)
     
     all_paths = []
-    if args.category != 'all':
+    if args.category != 'all' or True:
         category_paths = data[args.category]
         for path in category_paths:
             all_paths.append(os.path.join(args.base_dir,args.data_root,path))
+        print(f'{len(all_paths)=} from misc')
     else:
+        raise KeyboardInterrupt
         for category in data:
             category_paths = data[category]
             for path in category_paths:

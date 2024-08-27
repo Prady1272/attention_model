@@ -75,12 +75,18 @@ class Mobility_Dataset(Dataset):
         files_path = os.path.join(self.data_path,self.split+f'_{self.split_index}.json')
         with open(files_path, 'r') as file:
             data = json.load(file)
-        if self.category != 'all': 
+        if self.category != 'all' or True: 
             data_list = data[self.category]
         else:
-            data_list = []
-            for category,item in data.items():
-                data_list.extend(item)
+            raise KeyError
+            # # making all directory
+            # min_number = 1000000
+            # for cat in data:
+            #     min_number = min(len(data[cat],min_number))
+            # data_list = []
+            # for category,item in data.items():
+            #     data_list.extend(random.sample(item,min_number))
+            # print(f'{min_number=} {len(data_list)=}')
         return sorted(data_list)[:self.max_shapes]
 
 

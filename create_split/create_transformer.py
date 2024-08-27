@@ -5,7 +5,7 @@ import sys
 import torch
 import json
 import argparse
-def split_directories(dataset_path, training_data_dir, train_ratio=0.8,val_ratio=0.1,split_train_val=0.8,use_semi_split=True):
+def split_directories(dataset_path, training_data_dir, train_ratio=0.8,val_ratio=0.1,split_train_val=0.8):
     assert train_ratio<=0.8
 
     shapes_data_dir = os.path.join(dataset_path,training_data_dir)
@@ -16,7 +16,7 @@ def split_directories(dataset_path, training_data_dir, train_ratio=0.8,val_ratio
 
     # if not using the semi split remove this
     # this code is just initializing the directory. 
-    if use_semi_split:
+    if 'fine' in shapes_data_dir:
         semi_train_shapes = None
         semi_test_shapes = None
         with open (semi_train_file,'r') as file:
@@ -39,60 +39,87 @@ def split_directories(dataset_path, training_data_dir, train_ratio=0.8,val_ratio
                 semi_test_shapes[newcategory] = semi_test_shapes[category]
 
     # sorting them by category.
+    shape_category = {}
     for cat_shape in shapes_data:
         try:
+            if 'train' in cat_shape or 'val' in cat_shape or 'test' in cat_shape:
+                raise KeyError
             [category, fname] = cat_shape.split('_')
             fname = fname.split(".")[0]
             cat_shape_dict[category].append(fname)
+            shape_category[fname] = category
         
         except Exception as e:
             print(cat_shape)
             print(e)
             continue
 
-    for i in range(3):
-    #use this if not using semi split
-        if not use_semi_split:
-            train_split,val_split,test_split = defaultdict(list),defaultdict(list),defaultdict(list)
-            for category in cat_shape_dict:
-                random.shuffle(cat_shape_dict[category])
-                split_test_index = int(len(cat_shape_dict[category]) * train_ratio)
-                split_val_index = int(len(cat_shape_dict[category])*(train_ratio-val_ratio))
-                print(f'{category} {split_val_index=} {split_test_index=}  {len(cat_shape_dict[category])=}')
-                train_split[category] = cat_shape_dict[category][:split_val_index]
-                train_split[category] = ["_".join([category,shape])+".pth" for shape in train_split[category] ]
-                val_split[category] = cat_shape_dict[category][split_val_index:split_test_index]
-                val_split[category] = ["_".join([category,shape])+".pth" for shape in val_split[category] ]
-                test_split[category] = cat_shape_dict[category][split_test_index:]
-                test_split[category] = ["_".join([category,shape])+".pth" for shape in test_split[category] ]
-
-        #do not use this if not using semi split
-        else:
-            train_split,val_split,test_split = defaultdict(list),defaultdict(list),defaultdict(list)
-            for category in cat_shape_dict:
-                #  this first gets the training shapes and then from the training shapes gets the val index
-                category_train_shapes = list(set(cat_shape_dict[category]) & set(semi_train_shapes[category]))
-                random.shuffle(category_train_shapes)
-                split_val_index = int(len(category_train_shapes) * split_train_val)
-            
-                for shape in category_train_shapes[:split_val_index]:
-                    train_split[category].append("_".join([category,shape])+".pth")
-
-                for shape in category_train_shapes[split_val_index:]:
-                    val_split[category].append("_".join([category,shape])+".pth")
-                # just gets the test split
-                category_test_shapes = list(set(cat_shape_dict[category]) & set(semi_test_shapes[category]))
-                print(f'{category}  {split_val_index} {len(category_train_shapes)-split_val_index} {len(category_test_shapes)}')
-                for shape in category_test_shapes:
-                    test_split[category].append("_".join([category,shape])+".pth")
-
-        
-        
-
-        
-
     
+    # making all directory
+    # min_number = 1000000
+    # for cat in cat_shape_dict:
+    #     min_number = min(len(cat_shape_dict[cat],min_number))
+    # all_list = []
+    # for cat in cat_shape_dict:
+    #     all_list.extend(random.sample(cat_shape_dict[cat],min_number))
+    #  print(f'{min_number=} {len(all_list)=}')
 
+
+
+    if 'fine' in shapes_data_dir:
+        train_split,val_split,test_split = defaultdict(list),defaultdict(list),defaultdict(list)
+        for category in cat_shape_dict:
+            # print(f'{category}')
+            #  this first gets the training shapes and then from the training shapes gets the val index
+            category_train_shapes = list(set(cat_shape_dict[category]) & set(semi_train_shapes[category]))
+            random.shuffle(category_train_shapes)
+            split_val_index = int(len(category_train_shapes) * split_train_val)
+        
+            for shape in category_train_shapes[:split_val_index]:
+                train_split[category].append("_".join([category,shape])+".pth")
+
+            for shape in category_train_shapes[split_val_index:]:
+                val_split[category].append("_".join([category,shape])+".pth")
+            # just gets the test split
+            category_test_shapes = list(set(cat_shape_dict[category]) & set(semi_test_shapes[category]))
+            print(f'{category}  {len(train_split[category])} {len(val_split[category])} {len(category_test_shapes)}')
+            for shape in category_test_shapes:
+                test_split[category].append("_".join([category,shape])+".pth")
+
+        create_all(train_split)
+        create_all(val_split)
+        create_all(test_split)
+        
+
+
+        # writing to a json file
+        with open(os.path.join(shapes_data_dir, f'train_semi.json'), 'w') as f_train:
+            json.dump(train_split,f_train,indent=4)
+
+        with open(os.path.join(shapes_data_dir, f'val_semi.json'), 'w') as f_val:
+            json.dump(val_split,f_val,indent=4)
+        
+        with open(os.path.join(shapes_data_dir, f'test_semi.json'), 'w') as f_test:
+            json.dump(test_split,f_test,indent=4)
+
+    for i in range(3):
+        train_split,val_split,test_split = defaultdict(list),defaultdict(list),defaultdict(list)
+        for category in cat_shape_dict:
+            # print(f'{category=}')
+            random.shuffle(cat_shape_dict[category])
+            split_test_index = int(len(cat_shape_dict[category]) * train_ratio)
+            split_val_index = int(len(cat_shape_dict[category])*(train_ratio-val_ratio))
+            print(f'{category} {split_val_index=} {split_test_index=}  {len(cat_shape_dict[category])=}')
+            train_split[category] = cat_shape_dict[category][:split_val_index]
+            train_split[category] = ["_".join([category,shape])+".pth" for shape in train_split[category] ]
+            val_split[category] = cat_shape_dict[category][split_val_index:split_test_index]
+            val_split[category] = ["_".join([category,shape])+".pth" for shape in val_split[category] ]
+            test_split[category] = cat_shape_dict[category][split_test_index:]
+            test_split[category] = ["_".join([category,shape])+".pth" for shape in test_split[category] ]
+
+        create_all(train_split)
+        create_all(val_split)
+        create_all(test_split)
         # writing to a json file
         with open(os.path.join(shapes_data_dir, f'train_{i}.json'), 'w') as f_train:
             json.dump(train_split,f_train,indent=4)
@@ -105,7 +132,18 @@ def split_directories(dataset_path, training_data_dir, train_ratio=0.8,val_ratio
 
         
        
-    
+
+def create_all(split):
+    # making all directory
+    min_number = 1000000
+    for cat in split:
+        min_number = min(len(split[cat]),min_number)
+    all_list = []
+    for cat in split:
+        all_list.extend(random.sample(split[cat],min_number))
+    print(f'{min_number=} {len(all_list)=}')
+    split['all'] = all_list
+
 
 # Usage example:
 if __name__ == '__main__':
@@ -123,7 +161,7 @@ if __name__ == '__main__':
     base_dir = args.base_dir
     dataset_path = args.dataset_path
 
-    split_directories(os.path.join(base_dir, dataset_path),args.training_data_dir, train_ratio=0.8,use_semi_split=False)
+    split_directories(os.path.join(base_dir, dataset_path),args.training_data_dir, train_ratio=0.8)
 
 
 

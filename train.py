@@ -34,8 +34,6 @@ def max_number_parts(tensor):
 def get_args():
     parser = argparse.ArgumentParser(description='DeepSDF')
 
-    parser.add_argument("-e", "--evaluate", action="store_true", help="Activate test mode - Evaluate model on val/test set (no training)")
-
     # paths you may want to adjust
     parser.add_argument('--base_dir',default='/home/pradyumngoya/working_dr')
     parser.add_argument('--data_root',default='snippets/data/')
@@ -330,23 +328,24 @@ def main(args):
     elif args.model == 'transformer':
         collate_fn = custom_collate_fn
 
+    num_checking_bins = 3 if args.category != 'all' else 1
     # remove this
-    for temp_split_index in range(3):
+    for temp_split_index in range(num_checking_bins):
         motion_type_bins, orientation_bins,non_orientation_bins, num_parts = compute_stats_transform(args,split='train',split_index=temp_split_index)
         print(f'train {temp_split_index=} {motion_type_bins=}  {orientation_bins=} {non_orientation_bins=}')
         
-    for temp_split_index in range(3):
+    for temp_split_index in range(num_checking_bins):
         motion_type_bins, orientation_bins,non_orientation_bins, num_parts = compute_stats_transform(args,split='val',split_index=temp_split_index)
         print(f'val {temp_split_index=} {motion_type_bins=} {orientation_bins=} {non_orientation_bins=}')
     
-    for temp_split_index in range(3):
+    for temp_split_index in range(num_checking_bins):
         motion_type_bins, orientation_bins,non_orientation_bins, num_parts = compute_stats_transform(args,split='test',split_index=temp_split_index)
         print(f'test {temp_split_index =} {motion_type_bins=}  {orientation_bins=} {non_orientation_bins=}')
 
 
     # taking care of bins
     if args.model=='transformer':
-        motion_type_bins, orientation_bins,non_orientation_bins,num_parts = compute_stats_transform(args)
+        motion_type_bins, orientation_bins,non_orientation_bins,num_parts = compute_stats_transform(args,split='train',split_index=args.split_index)
         if not args.pretraining:
             args.max_seq_len = max_number_parts(torch.tensor(num_parts))
             args.batch_size = max(int(math.floor(160/args.max_seq_len)),1) # depends on the true sequence length
